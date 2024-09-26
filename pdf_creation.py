@@ -44,8 +44,8 @@ def draw_paragraph(text, style):
 
 
 def add_logo_and_text(canvas, doc, logo_path):
-    logo = Image(logo_path, width=50, height=50)
-    logo.drawOn(canvas, doc.pagesize[0] - 60, doc.pagesize[1] - 60)  # Positioning the logo
+    logo = Image(logo_path, width=70, height=70)
+    logo.drawOn(canvas, doc.pagesize[0] - 130, doc.pagesize[1] - 80)  # Positioning the logo
     canvas.setFont('Helvetica-Bold', 12)
 
 

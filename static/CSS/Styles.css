@@ -4,6 +4,7 @@
     padding: 0;
     box-sizing: border-box;
 }
+
 html, body {
     height: 100%;
     margin: 0;
@@ -12,174 +13,142 @@ html, body {
 
 body {
     font-family: 'Roboto', sans-serif;
-    background-color: #e6e7e8;
-    /* Light grey background */
-    background-image: url('../Background/Background.jpg');
-    /* Path to your background image */
+    background: linear-gradient(145deg, #f9c6c6 0%, #dd1d21 45%, #b5161b 100%);
     background-size: cover;
-    /* Cover the entire viewport */
     background-position: center;
-    /* Center the image */
-    background-repeat: no-repeat;
-    /* Do not repeat the image */
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     line-height: 1.6;
     color: #333;
+    overflow-x: hidden;
 }
 
+/* Container Styles */
 .container {
-    max-width: 1000px;
-    margin: 30px auto;
-    padding: 20px;
+    max-width: 800px;
+    width: 100%;
+    margin: 20px;
+    padding: 40px;
     background-color: #fff;
-    /* White background */
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    /* Subtle shadow for depth */
-    border: 1px solid #ddd;
-    /* Light border for definition */
+    border-radius: 10px;
+    border: 1px solid #ddd; /* Use a softer border */
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1); /* Add a softer, more modern shadow */
 }
 
-h1 {
-    color: #0056b3;
-    /* Deep blue color for the heading */
-    text-align: center;
+/* Company Logo Styles */
+.logo-container {
+    text-align: left; /* Move the logo to the left side */
     margin-bottom: 20px;
-    font-size: 24px;
-    /* Slightly larger font size for the heading */
 }
 
+.company-logo {
+    width: 120px;
+    height: auto;
+    display: inline-block;
+}
+
+/* Heading Styles */
+h1 {
+    color: #dd1d21;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 1px; /* Slight spacing for elegance */
+}
+
+/* Form Styles */
 .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column; /* Ensure vertical alignment */
 }
 
 label {
-    display: block;
-    margin-bottom: 5px;
     font-weight: bold;
     color: #555;
-    /* Dark grey color for labels */
+    margin-bottom: 5px;
+    font-size: 14px;
 }
 
-input[type="number"] {
+input[type="number"], select {
     width: 100%;
-    padding: 10px;
-    margin: 4px 0 20px;
-    display: inline-block;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    transition: border-color 0.3s;
-    /* Smooth transition for hover effect */
+    padding: 12px;
+    border: 1px solid #ddd; /* Softer border */
+    border-radius: 6px;
+    font-size: 16px;
+    transition: all 0.3s ease; /* Smooth transition for hover/focus */
+    box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.05); /* Slight inset shadow for depth */
 }
 
-input[type="number"]:hover,
-input[type="number"]:focus {
-    border-color: #0056b3;
-    /* Highlight input border on hover/focus */
+input[type="number"]:hover, input[type="number"]:focus, select:hover, select:focus {
+    border-color: #000000; /* Company red on focus */
+    box-shadow: 0 0 8px rgba(221, 29, 33, 0.2); /* Soft glow on hover/focus */
+    outline: none; /* Remove default focus outline */
 }
 
 .btn {
     display: block;
-    width: 50%;
-    background-color: #0056b3;
-    /* Deep blue background for the button */
+    width: 100%;
+    background-color: #dd1d21;
     color: white;
-    padding: 12px 20px;
-    margin: 20px 0;
+    padding: 14px;
+    margin-top: 20px;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
-    transition: background-color 0.3s;
-    /* Smooth transition for hover effect */
+    font-size: 18px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
+
 .btn:hover {
-    background-color: #003d7a;
-    /* Darken button color on hover */
+    background-color: #b5161b;
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15); /* More shadow on hover */
+    transform: translateY(-2px); /* Slight lift effect */
 }
 
-
+/* Results Styles */
 .results {
     margin-top: 20px;
     padding: 15px;
     background-color: #f9f9f9;
-    /* Very light grey background for results */
-    border-radius: 4px;
+    border-radius: 6px;
     border: 1px solid #ddd;
     font-weight: bold;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Flexbox layout for the form */
+/* Flexbox Layout */
 .form-container {
     display: flex;
+    flex-wrap: wrap; /* Allow form to wrap on smaller screens */
     justify-content: space-between;
+    gap: 20px;
 }
 
 .column {
     flex: 1;
-    margin-right: 20px; /* Space between columns */
+    min-width: 320px;
 }
 
-.column:last-child {
-    margin-right: 0;
-}
-
-
+/* Select Dropdown Styling */
 select {
-width: 50%;
-padding: 10px;
-margin-bottom: 20px;
-border: 1px solid #ccc;
-border-radius: 4px;
-background-color: white;
-font-family: 'Roboto', sans-serif;
-font-size: 16px;
-cursor: pointer;
-appearance: none;
--webkit-appearance: none;
--moz-appearance: none;
-background-image: url('../Icons/dropdown.svg');
-background-repeat: no-repeat;
-background-position: right 10px center;
-background-size: 30px;
+    background-color: white;
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    cursor: pointer;
 }
 
-select:hover {
-border-color: #888;
+select:hover, select:focus {
+    outline: none;
+    border-color: #000000;
+    box-shadow: 0 0 6px rgba(221, 29, 33, 0.3);
 }
-
-select:focus {
-outline: none;
-border-color: #0056b3;
-}
-
-#chartContainer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    align-items: stretch;
-    height: 300px;
-}
-  
-.bar {
-    height: 200px;
-    background-color: #3498db;
-    color: white;
-    line-height: 50px;
-    text-align: center;
-    border: 1px solid #ccc;
-}
-
-.bar-label {
-    text-align: center;
-}
-
 
 :root {
-    --blue-color: rgb(254, 254, 0);
-    --orange-color: orange;
-    --red-color: red;
-    --grey-color: rgb(37, 69, 255);
+    --red-color: #dd1d21;
+    --white-color: #ffffff;
 }
-  
-  
-  

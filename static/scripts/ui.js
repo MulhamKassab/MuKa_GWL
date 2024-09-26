@@ -95,7 +95,6 @@ function updateLayerDetails(layerIndex) {
     }
 }
 
-
 function updatePlys(layerIndex) {
     const numPlys = parseInt(document.getElementById(`numPlys${layerIndex}`).value);
     const plyDetailsContainer = document.getElementById(`plyDetails${layerIndex}`);
@@ -152,86 +151,5 @@ function updatePlys(layerIndex) {
                 </div>
             `;
         }
-    }
-}
-
-
-
-function createBar(flexBasis, backgroundColor, thickness) {
-    const barContainer = document.createElement('div');
-    barContainer.classList.add('bar-container');
-
-    const bar = document.createElement('div');
-    bar.classList.add('bar');
-    bar.style.flex = `0 0 ${Math.min(flexBasis, 100)}%`;
-    bar.style.backgroundColor = backgroundColor;
-
-    const label = document.createElement('div');
-    label.classList.add('bar-label');
-    label.textContent = `${thickness} mm`;
-
-    barContainer.appendChild(bar);
-    barContainer.appendChild(label);
-
-    return barContainer;
-}
-
-function gatherLayerDataAndUpdateChart() {
-    const thicknessArray = [];
-    const colorsArray = [];
-    const glazingType = document.getElementById('glazingType').value;
-    const numberOfLayers = glazingType === 'single' ? 1 : 2;
-
-    for (let i = 0; i < numberOfLayers; i++) {
-        const layerType = document.getElementById(`layerType${i}`).value;
-        if (layerType === 'mono') {
-            const thickness = parseFloat(document.getElementById(`monoThickness${i}`).value) || 0;
-            thicknessArray.push(thickness);
-            colorsArray.push(getColorByType(document.getElementById(`monoType${i}`).value));
-        } else if (layerType === 'laminated') {
-            const numPlys = parseInt(document.getElementById(`numPlys${i}`).value);
-            for (let j = 0; j < numPlys; j++) {
-                const thickness = parseFloat(document.getElementById(`plyThickness${i}-${j}`).value) || 0;
-                thicknessArray.push(thickness);
-                colorsArray.push(getColorByType(document.getElementById(`plyType${i}-${j}`).value));
-                if (j < numPlys - 1) {
-                    const pvbThickness = parseFloat(document.getElementById(`pvbThickness${i}-${j}`).value) || 0;
-                    thicknessArray.push(pvbThickness);
-                    colorsArray.push('grey');
-                }
-            }
-        }
-    }
-    updateChart(thicknessArray, colorsArray);
-}
-
-function updateChart(thicknessArray, colorsArray) {
-    const chartContainer = document.getElementById('chartContainer');
-    if (!chartContainer) {
-        console.error("chartContainer not found");
-        return;
-    }
-    chartContainer.innerHTML = '';
-
-    const totalThickness = thicknessArray.reduce((acc, val) => acc + val, 0);
-
-    thicknessArray.forEach((thickness, index) => {
-        const flexBasis = (thickness / totalThickness) * 100;
-        const barBackgroundColor = colorsArray[index] || 'transparent';
-        const bar = createBar(flexBasis, barBackgroundColor, thickness);
-        chartContainer.appendChild(bar);
-    });
-}
-
-function getColorByType(type) {
-    switch (type) {
-        case 'annealed':
-            return 'blue';
-        case 'heatStrengthened':
-            return 'orange';
-        case 'tempered':
-            return 'red';
-        default:
-            return 'grey';
     }
 }

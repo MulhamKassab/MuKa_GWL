@@ -67,7 +67,7 @@ def calculate():
     temp_plot_dir = os.path.join(os.getcwd(), "download")
     os.makedirs(temp_plot_dir, exist_ok=True)
     plot_image_path = os.path.join(temp_plot_dir, "nfl_plot.png")
-    logo_path = os.path.join(temp_plot_dir, "GUTMANN logo.png")
+    logo_path = os.path.join(temp_plot_dir, "logo.png")
 
     try:
         calculated_nfl = nfl_result[0] if isinstance(nfl_result, list) and nfl_result else nfl_result

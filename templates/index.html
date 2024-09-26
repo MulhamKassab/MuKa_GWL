@@ -2,13 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Glass Wind Load Calculation</title>
+    <title>Glass Wind Load Calculator</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="/static/CSS/Styles.css">
+    <link rel="stylesheet" href="/static/css/Styles.css">
 </head>
 <body>
     <div class="container">
+        <!-- Company Logo at the top -->
+        <div class="logo-container">
+<img src="{{ url_for('static', filename='../download/logo.png') }}" alt="Gutmann Logo" class="company-logo">
+        </div>
+
         <h1>Glass Wind Load Calculator</h1>
         <form id="calculationForm" class="form">
             <div class="form-container">
@@ -27,7 +31,7 @@
                         <label for="Allowable_Deflection">Allowable Deflection (mm)</label>
                         <input type="number" id="Allowable_Deflection" name="Allowable_Deflection" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="glassLength">Glass Length (mm)</label>
                         <input type="number" id="glassLength" name="glassLength" required>
@@ -40,16 +44,16 @@
                         <label for="numberOfSupportedSides">Number of Supported Sides</label>
                         <select id="numberOfSupportedSides" name="numberOfSupportedSides" required>
                             <option value="0">Number of supported sides</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
+<!--                            <option value="1">1</option>-->
+<!--                            <option value="2">2</option>-->
+<!--                            <option value="3">3</option>-->
                             <option value="4">4</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="glazingType">Glazing Type</label>
                         <select id="glazingType" name="glazingType" required onchange="updateGlazingType()">
-							<option value="">Choose Glazing</option>
+                            <option value="">Choose Glazing</option>
                             <option value="single">Single Glazed</option>
                             <option value="double">Double Glazed</option>
                         </select>
@@ -58,14 +62,13 @@
                 </div>
                 <div class="column">
                     <div id="layerInputs"></div>
-                    <button type="button" onclick="gatherLayerDataAndUpdateChart()" class="btn">Update Chart</button>
-                    <div id="chartContainer"></div> <!-- Ensure this element exists -->
                 </div>
             </div>
             <button type="button" onclick="gatherDataFromInput()" class="btn">Calculate</button>
         </form>
         <div class="results" id="results"></div>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="/static/scripts/script.js"></script>
     <script src="/static/scripts/ui.js"></script>
