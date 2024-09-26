@@ -5,3 +5,4 @@ scipy~=1.13.1
 reportlab~=4.2.0
 matplotlib~=3.9.0
 shapely~=2.0.4
+gunicorn
