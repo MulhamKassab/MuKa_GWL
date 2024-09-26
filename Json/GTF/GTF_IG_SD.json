@@ -1,0 +1,19 @@
+{
+  "GTF": {
+    "annealed": {
+      "annealed": { "GTF1": 0.9, "GTF2": 0.9 },
+      "heatStrengthened": { "GTF1": 1.0, "GTF2": 1.9 },
+      "tempered": { "GTF1": 1.0, "GTF2": 3.8 }
+    },
+    "heatStrengthened": {
+      "annealed": { "GTF1": 1.9, "GTF2": 1.0 },
+      "heatStrengthened": { "GTF1": 1.8, "GTF2": 1.8 },
+      "tempered": { "GTF1": 1.9, "GTF2": 3.6 }
+    },
+    "tempered": {
+      "annealed": { "GTF1": 3.8, "GTF2": 1.0 },
+      "heatStrengthened": { "GTF1": 3.8, "GTF2": 1.9 },
+      "tempered": { "GTF1": 3.6, "GTF2": 3.6 }
+    }
+  }
+}

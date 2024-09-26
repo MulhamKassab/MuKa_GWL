@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Glass Wind Load Calculation</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/static/css/Styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Glass Wind Load Calculator</h1>
+        <form id="calculationForm" class="form">
+            <div class="form-container">
+                <div class="column">
+                    <div class="form-group">
+                        <label for="ShortDurationLoad">Short Duration Load (3 Seconds)</label>
+                        <input type="number" id="ShortDurationLoad" name="ShortDurationLoad" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="LongDurationLoad">Long Duration Load (30 Days)</label>
+                        <input type="number" id="LongDurationLoad" name="LongDurationLoad" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Allowable_Deflection">Allowable Deflection (mm)</label>
+                        <input type="number" id="Allowable_Deflection" name="Allowable_Deflection" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="glassLength">Glass Length (mm)</label>
+                        <input type="number" id="glassLength" name="glassLength" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="glassWidth">Glass Width (mm)</label>
+                        <input type="number" id="glassWidth" name="glassWidth" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="numberOfSupportedSides">Number of Supported Sides</label>
+                        <select id="numberOfSupportedSides" name="numberOfSupportedSides" required>
+                            <option value="0">Number of supported sides</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="glazingType">Glazing Type</label>
+                        <select id="glazingType" name="glazingType" required onchange="updateGlazingType()">
+							<option value="">Choose Glazing</option>
+                            <option value="single">Single Glazed</option>
+                            <option value="double">Double Glazed</option>
+                        </select>
+                    </div>
+
+                </div>
+                <div class="column">
+                    <div id="layerInputs"></div>
+                    <button type="button" onclick="gatherLayerDataAndUpdateChart()" class="btn">Update Chart</button>
+                    <div id="chartContainer"></div> <!-- Ensure this element exists -->
+                </div>
+            </div>
+            <button type="button" onclick="gatherDataFromInput()" class="btn">Calculate</button>
+        </form>
+        <div class="results" id="results"></div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="/static/scripts/script.js"></script>
+    <script src="/static/scripts/ui.js"></script>
+</body>
+</html>

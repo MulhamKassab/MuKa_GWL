@@ -1,0 +1,76 @@
+{
+    "Glass_Thicknesses": [
+        {
+            "Nominal_mm": 2.5,
+            "Minimum_mm": 2.16,
+            "Nominal_in": "3/32",
+            "Minimum_in": "0.085"
+        },
+        {
+            "Nominal_mm": 2.7,
+            "Minimum_mm": 2.59,
+            "Nominal_in": "lami",
+            "Minimum_in": "0.102"
+        },
+        {
+            "Nominal_mm": 3.0,
+            "Minimum_mm": 2.92,
+            "Nominal_in": "1/8",
+            "Minimum_in": "0.115"
+        },
+        {
+            "Nominal_mm": 4.0,
+            "Minimum_mm": 3.78,
+            "Nominal_in": "5/32",
+            "Minimum_in": "0.149"
+        },
+        {
+            "Nominal_mm": 5.0,
+            "Minimum_mm": 4.57,
+            "Nominal_in": "3/16",
+            "Minimum_in": "0.180"
+        },
+        {
+            "Nominal_mm": 6.0,
+            "Minimum_mm": 5.56,
+            "Nominal_in": "1/4",
+            "Minimum_in": "0.219"
+        },
+        {
+            "Nominal_mm": 8.0,
+            "Minimum_mm": 7.42,
+            "Nominal_in": "5/16",
+            "Minimum_in": "0.292"
+        },
+        {
+            "Nominal_mm": 10.0,
+            "Minimum_mm": 9.02,
+            "Nominal_in": "3/8",
+            "Minimum_in": "0.355"
+        },
+        {
+            "Nominal_mm": 12.0,
+            "Minimum_mm": 11.91,
+            "Nominal_in": "1/2",
+            "Minimum_in": "0.469"
+        },
+        {
+            "Nominal_mm": 16.0,
+            "Minimum_mm": 15.09,
+            "Nominal_in": "5/8",
+            "Minimum_in": "0.595"
+        },
+        {
+            "Nominal_mm": 19.0,
+            "Minimum_mm": 18.26,
+            "Nominal_in": "3/4",
+            "Minimum_in": "0.719"
+        },
+        {
+            "Nominal_mm": 22.0,
+            "Minimum_mm": 21.44,
+            "Nominal_in": "7/8",
+            "Minimum_in": "0.844"
+        }
+    ]
+}

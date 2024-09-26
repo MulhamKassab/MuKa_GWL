@@ -1,0 +1,15 @@
+{
+  "GTF_Tripple_ insulating": {
+    "ShortDurationLoad": {
+      "AN": 0.81,
+      "HS": 1.62,
+      "FT": 3.24
+    
+  },
+  "LongDurationLoad": {
+      "AN": 0.34,
+      "HS": 1.03,
+      "FT": 2.58
+  }
+  }
+}

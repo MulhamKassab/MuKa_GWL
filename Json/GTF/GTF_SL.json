@@ -1,0 +1,14 @@
+{
+    "GTF_Single_Lite": {
+        "short": {
+            "annealed": 1.0,
+            "heatStrengthened": 2.0,
+            "tempered": 4.0
+        },
+        "long": {
+            "annealed": 0.43,
+            "heatStrengthened": 1.3,
+            "tempered": 3.0
+        }
+    }
+}
