@@ -59,9 +59,10 @@ def calculate():
             float(calculate_cof(shortDurationLoad, glass_length, glass_width, modulus_of_elasticity, thickness)), 2)
         short_cof_to_send.append(cof_short_duration)
 
-        cof_long_duration = round(
-            float(calculate_cof(longDurationLoad, glass_length, glass_width, modulus_of_elasticity, thickness)), 2)
-        long_cof_to_send.append(cof_long_duration)
+        if longDurationLoad != 0:
+            cof_long_duration = round(
+                float(calculate_cof(longDurationLoad, glass_length, glass_width, modulus_of_elasticity, thickness)), 2)
+            long_cof_to_send.append(cof_long_duration)
 
     # Generate plot and save as image
     temp_plot_dir = os.path.join(os.getcwd(), "download")

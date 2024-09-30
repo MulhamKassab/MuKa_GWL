@@ -54,20 +54,20 @@ def create_pdf(fileobj, glass_length, glass_width, number_of_supported_sides, th
                long_cof, construction_types, heat_treatments, logo_path):
     doc = SimpleDocTemplate(fileobj, pagesize=A4, topMargin=30)
     elements = [
-                draw_paragraph("GUTMANN PVB", styles['MainTitle']),
-                draw_paragraph("Load Resistance Report", styles['SecondTitle']),
-                draw_paragraph("Based on ASTM E1300", styles['MyNormal']),
-                Spacer(1, 20),
-                # Glass Information Section Title
-                draw_section_title("Glass Information"), Spacer(1, 12),
-                draw_paragraph(f"<b>Long side (mm):</b> {glass_length}", styles['MyNormal']),
-                draw_paragraph(f"<b>Short side (mm):</b> {glass_width}", styles['MyNormal']),
-                draw_paragraph(f"<b>Supported sides:</b> {number_of_supported_sides}", styles['MyNormal']),
-                # Glass Information Content
-                draw_paragraph(f"<b>Allowable deflection (mm):</b> {allowable_Deflection}", styles['MyNormal']),
-                draw_paragraph(f"<b>Glass weight (KG):</b> {glass_weight}", styles['MyNormal']), Spacer(1, 12),
-                # Layers Information Section Title
-                draw_section_title("Layers Information"), Spacer(1, 12)]
+        draw_paragraph("GUTMANN PVB", styles['MainTitle']),
+        draw_paragraph("Load Resistance Report", styles['SecondTitle']),
+        draw_paragraph("Based on ASTM E1300", styles['MyNormal']),
+        Spacer(1, 20),
+        # Glass Information Section Title
+        draw_section_title("Glass Information"), Spacer(1, 12),
+        draw_paragraph(f"<b>Long side (mm):</b> {glass_length}", styles['MyNormal']),
+        draw_paragraph(f"<b>Short side (mm):</b> {glass_width}", styles['MyNormal']),
+        draw_paragraph(f"<b>Supported sides:</b> {number_of_supported_sides}", styles['MyNormal']),
+        # Glass Information Content
+        draw_paragraph(f"<b>Allowable deflection (mm):</b> {allowable_Deflection}", styles['MyNormal']),
+        draw_paragraph(f"<b>Glass weight (KG):</b> {glass_weight}", styles['MyNormal']), Spacer(1, 12),
+        # Layers Information Section Title
+        draw_section_title("Layers Information"), Spacer(1, 12)]
 
     # Layers Information Content
     for i, (thickness, construction_type, heat_treatment) in enumerate(
@@ -81,7 +81,8 @@ def create_pdf(fileobj, glass_length, glass_width, number_of_supported_sides, th
 
     elements.append(draw_paragraph("Applied Loads:", styles['MySubTitle']))
     elements.append(draw_paragraph(f"<b>Short Duration Load:</b> {short_load} kPa (3 sec)", styles['MyNormal']))
-    elements.append(draw_paragraph(f"<b>Long Duration Load:</b> {long_load} kPa (30 days)", styles['MyNormal']))
+    if long_load > 0:  # Only display long duration if it's greater than 0
+        elements.append(draw_paragraph(f"<b>Long Duration Load:</b> {long_load} kPa (30 days)", styles['MyNormal']))
     elements.append(Spacer(1, 12))
 
     elements.append(Spacer(1, 12))
@@ -90,35 +91,42 @@ def create_pdf(fileobj, glass_length, glass_width, number_of_supported_sides, th
     elements.append(draw_section_title("Final Results:"))
     elements.append(Spacer(1, 12))
 
-    # First Table: LR and Applied Load
+    # First Table: LR and Applied Load (skip long load results if long_load is 0)
     table_data_lr = [
         ["Layer", "Duration", "LR (kPa)", "Applied Load (kPa)", "Result"]
     ]
 
-    # Second Table: Deflection and Allowable Deflection
+    # Second Table: Deflection and Allowable Deflection (skip long load results if long_load is 0)
     table_data_deflection = [
         ["Layer", "Duration", "Deflection (mm)", "Allowable Deflection (mm)", "Result"]
     ]
 
     for i in range(len(thicknesses)):
         short_lr = lr[0]['short'][i] if 'short' in lr[0] and len(lr[0]['short']) > i else 0.0
-        long_lr = lr[0]['long'][i] if 'long' in lr[0] and len(lr[0]['long']) > i else 0.0
 
+        # Calculate short duration results
         short_cof_result = "Accepted" if short_cof[i] < allowable_Deflection else "Not Accepted"
-        long_cof_result = "Accepted" if long_cof[i] < allowable_Deflection else "Not Accepted"
-
-        # Results for LR and Applied Load
         short_result_lr = "Accepted" if short_lr > short_load else "Not Accepted"
-        long_result_lr = "Accepted" if long_lr > long_load else "Not Accepted"
 
-        # Add rows for LR and Applied Load, with merged "Layer" cell
+        # Add rows for Short Duration in LR and Applied Load table
         table_data_lr.append([f"{i + 1}", "Short", f"{short_lr:.2f}", f"{short_load:.2f}", short_result_lr])
-        table_data_lr.append(["", "Long", f"{long_lr:.2f}", f"{long_load:.2f}", long_result_lr])
 
-        # Add rows for Deflection and Allowable Deflection, with merged "Layer" cell
+        # Add rows for Short Duration in Deflection table
         table_data_deflection.append(
             [f"{i + 1}", "Short", f"{short_cof[i]:.2f}", f"{allowable_Deflection:.2f}", short_cof_result])
-        table_data_deflection.append(["", "Long", f"{long_cof[i]:.2f}", f"{allowable_Deflection:.2f}", long_cof_result])
+
+        # If `long_load` is greater than 0, calculate and add long duration results
+        if long_load > 0:
+            long_lr = lr[0]['long'][i] if 'long' in lr[0] and len(lr[0]['long']) > i else 0.0
+            long_cof_result = "Accepted" if long_cof[i] < allowable_Deflection else "Not Accepted"
+            long_result_lr = "Accepted" if long_lr > long_load else "Not Accepted"
+
+            # Add rows for Long Duration in LR and Applied Load table
+            table_data_lr.append(["", "Long", f"{long_lr:.2f}", f"{long_load:.2f}", long_result_lr])
+
+            # Add rows for Long Duration in Deflection table
+            table_data_deflection.append(
+                ["", "Long", f"{long_cof[i]:.2f}", f"{allowable_Deflection:.2f}", long_cof_result])
 
     # Create the first table: LR and Applied Load
     result_table_lr = Table(table_data_lr, hAlign="LEFT")
@@ -135,12 +143,10 @@ def create_pdf(fileobj, glass_length, glass_width, number_of_supported_sides, th
         ('BOTTOMPADDING', (0, 1), (-1, -1), 6),
         ('BACKGROUND', (1, 1), (-1, -1), colors.whitesmoke),  # Body background
         ('GRID', (0, 0), (-1, -1), 0.5, colors.black),  # Grid lines
-        ('SPAN', (0, 1), (0, 2)),  # Merging Layer cells for Short and Long
-        ('SPAN', (0, 3), (0, 4)),  # Merging Layer cells for Short and Long for second layer
     ]))
 
     # Create the second table: Deflection and Allowable Deflection
-    result_table_deflection = Table(table_data_deflection,  hAlign="LEFT")
+    result_table_deflection = Table(table_data_deflection, hAlign="LEFT")
 
     # Style the second table
     result_table_deflection.setStyle(TableStyle([
@@ -154,8 +160,6 @@ def create_pdf(fileobj, glass_length, glass_width, number_of_supported_sides, th
         ('BOTTOMPADDING', (0, 1), (-1, -1), 6),
         ('BACKGROUND', (1, 1), (-1, -1), colors.whitesmoke),  # Body background
         ('GRID', (0, 0), (-1, -1), 0.5, colors.black),  # Grid lines
-        ('SPAN', (0, 1), (0, 2)),  # Merging Layer cells for Short and Long
-        ('SPAN', (0, 3), (0, 4)),  # Merging Layer cells for Short and Long for second layer
     ]))
 
     # Add the first table to elements (LR and Applied Load)
@@ -167,8 +171,7 @@ def create_pdf(fileobj, glass_length, glass_width, number_of_supported_sides, th
     elements.append(Spacer(1, 12))
 
     elements.append(draw_paragraph("Notes:", styles['MyBold']))
-    elements.append(
-        draw_paragraph("Load resistance values are computed in accordance with ASTM E1300", styles['MyNormal']))
+    elements.append(draw_paragraph("Load resistance values are computed in accordance with ASTM E1300", styles['MyNormal']))
 
     doc.build(elements, onFirstPage=lambda canvas, doc1: add_logo_and_text(canvas, doc1, logo_path),
               onLaterPages=lambda canvas, doc1: add_logo_and_text(canvas, doc1, logo_path))

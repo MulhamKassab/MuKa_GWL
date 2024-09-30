@@ -7,7 +7,7 @@ function updateGlazingType() {
         layerInputsHTML = `
             <div class="form-group">
                 <label for="layerType0">Single Glazed Layer Type:</label>
-                <select id="layerType0" name="layerType0" onchange="updateLayerDetails(0)">
+                <select id="layerType0" name="layerType0" onchange="updateLayerDetails(0)" required>
                     <option value="">Select Type</option>
                     <option value="mono">Monolithic</option>
                     <option value="laminated">Laminated</option>
@@ -20,7 +20,7 @@ function updateGlazingType() {
             layerInputsHTML += `
                 <div class="form-group">
                     <label for="layerType${i}">Double Glazed Layer ${i + 1} Type:</label>
-                    <select id="layerType${i}" name="layerType${i}" onchange="updateLayerDetails(${i})">
+                    <select id="layerType${i}" name="layerType${i}" onchange="updateLayerDetails(${i})" required>
                         <option value="">Select Type</option>
                         <option value="mono">Monolithic</option>
                         <option value="laminated">Laminated</option>
@@ -32,6 +32,7 @@ function updateGlazingType() {
     }
 
     layerInputsContainer.innerHTML = layerInputsHTML;
+    addInputEventListeners(); // Reapply listeners for dynamically generated fields
 }
 
 function updateLayerDetails(layerIndex) {
@@ -61,13 +62,13 @@ function updateLayerDetails(layerIndex) {
         layerDetailsContainer.innerHTML = `
             <div class="form-group">
                 <label for="monoThickness${layerIndex}">Layer ${layerIndex + 1} Thickness (mm):</label>
-                <select id="monoThickness${layerIndex}" name="monoThickness${layerIndex}">
+                <select id="monoThickness${layerIndex}" name="monoThickness${layerIndex}" required>
                     ${thicknessOptions.map(option => `<option value="${option.value}">${option.display}</option>`).join('')}
                 </select>
             </div>
             <div class="form-group">
                 <label for="monoType${layerIndex}">Glass Strength of Layer ${layerIndex + 1}:</label>
-                <select id="monoType${layerIndex}" name="monoType${layerIndex}">
+                <select id="monoType${layerIndex}" name="monoType${layerIndex}" required>
                     <option value="">Select Type</option>
                     <option value="annealed">Annealed</option>
                     <option value="heatStrengthened">Heat Strengthened</option>
@@ -79,12 +80,12 @@ function updateLayerDetails(layerIndex) {
         layerDetailsContainer.innerHTML = `
             <div class="form-group">
                 <label for="numPlys${layerIndex}">Number of Plies for Layer ${layerIndex + 1}:</label>
-                <input type="number" id="numPlys${layerIndex}" name="numPlys${layerIndex}" required min="1" onchange="updatePlys(${layerIndex})">
+                <input type="number" id="numPlys${layerIndex}" name="numPlys${layerIndex}" required min="1" onchange="updatePlys(${layerIndex})" required>
             </div>
             <div id="plyDetails${layerIndex}"></div>
             <div class="form-group">
                 <label for="laminatedType${layerIndex}">Glass Strength of Laminated Layer ${layerIndex + 1}:</label>
-                <select id="laminatedType${layerIndex}" name="laminatedType${layerIndex}">
+                <select id="laminatedType${layerIndex}" name="laminatedType${layerIndex}" required>
                     <option value="">Select Type</option>
                     <option value="annealed">Annealed</option>
                     <option value="heatStrengthened">Heat Strengthened</option>
@@ -93,6 +94,7 @@ function updateLayerDetails(layerIndex) {
             </div>
         `;
     }
+    addInputEventListeners(); // Reapply listeners for dynamically generated fields
 }
 
 function updatePlys(layerIndex) {
@@ -112,10 +114,10 @@ function updatePlys(layerIndex) {
         {value: 6.0, display: '6.0 (5.56)'},
         {value: 8.0, display: '8.0 (7.42)'},
         {value: 10.0, display: '10.0 (9.02)'},
-        {value: 12.0, display: '12.0 (11.91)'},
-        {value: 16.0, display: '16.0 (15.09)'},
-        {value: 19.0, display: '19.0 (18.26)'},
-        {value: 22.0, display: '22.0 (21.44)'}
+//        {value: 12.0, display: '12.0 (11.91)'},
+//        {value: 16.0, display: '16.0 (15.09)'},
+//        {value: 19.0, display: '19.0 (18.26)'},
+//        {value: 22.0, display: '22.0 (21.44)'}
     ];
 
     // Define the options for the PVB thickness dropdown with formatted values
@@ -136,7 +138,7 @@ function updatePlys(layerIndex) {
         plyDetailsContainer.innerHTML += `
             <div class="form-group">
                 <label for="plyThickness${layerIndex}-${i}">Ply ${i + 1} Thickness (mm):</label>
-                <select id="plyThickness${layerIndex}-${i}" name="plyThickness${layerIndex}-${i}">
+                <select id="plyThickness${layerIndex}-${i}" name="plyThickness${layerIndex}-${i}" required>
                     ${thicknessOptions.map(option => `<option value="${option.value}">${option.display}</option>`).join('')}
                 </select>
             </div>
@@ -145,11 +147,30 @@ function updatePlys(layerIndex) {
             plyDetailsContainer.innerHTML += `
                 <div class="form-group">
                     <label for="pvbThickness${layerIndex}-${i}">PVB Thickness (mm) after Ply ${i + 1}:</label>
-                    <select id="pvbThickness${layerIndex}-${i}" name="pvbThickness${layerIndex}-${i}">
+                    <select id="pvbThickness${layerIndex}-${i}" name="pvbThickness${layerIndex}-${i}" required>
                         ${pvbOptions.map(option => `<option value="${option.value}">${option.display}</option>`).join('')}
                     </select>
                 </div>
             `;
         }
     }
+    addInputEventListeners(); // Reapply listeners for dynamically generated fields
+
 }
+
+function addInputEventListeners() {
+    const inputFields = document.querySelectorAll('input[required], select[required]');
+
+    inputFields.forEach(field => {
+        field.addEventListener('change', () => {
+            field.classList.remove('input-error'); // Remove error class if previously applied
+            field.classList.add('input-changed');  // Add "input-changed" class to show the field has been edited
+        });
+    });
+}
+
+// Call the function after the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', () => {
+    addInputEventListeners();
+});
+

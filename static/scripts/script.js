@@ -14,15 +14,53 @@ const inputParams = {
     pvbThicknesses: [] // Array for PVB thicknesses
 };
 
+function validateAndDownload() {
+    const requiredFields = document.querySelectorAll('input[required], select[required]');
+    let allFilled = true;
+
+    requiredFields.forEach(field => {
+        field.classList.remove('input-error'); // Remove previous highlights
+    });
+
+    requiredFields.forEach(field => {
+        if (field.value.trim() === '') {
+            field.classList.add('input-error'); // Highlight empty fields
+            allFilled = false;
+        }
+    });
+
+    const resultsDiv = document.getElementById('results');
+    resultsDiv.innerHTML = ''; // Clear previous messages
+
+    if (allFilled) {
+        gatherDataFromInput(); // Continue with the normal download process
+    } else {
+        const errorMessage = document.createElement('div');
+        errorMessage.textContent = "Please fill in all required fields.";
+        errorMessage.style.color = "red";
+        errorMessage.style.fontWeight = "bold";
+        resultsDiv.appendChild(errorMessage);
+    }
+}
+
+
 // Function to update input parameters
 function setInputParameters(params) {
     Object.assign(inputParams, params);
     console.log("params = ", params);
 }
+function showSpinner() {
+    document.getElementById('spinner').style.display = 'flex';
+}
+
+// Hide the spinner
+function hideSpinner() {
+    document.getElementById('spinner').style.display = 'none';
+}
 
 function gatherDataFromInput() {
     const shortDurationLoad = parseFloat(document.getElementById('ShortDurationLoad').value) || 0;
-    const longDurationLoad = parseFloat(document.getElementById('LongDurationLoad').value) || 0;
+    const longDurationLoad = document.getElementById('LongDurationLoad').value.trim() === '' ? 0 : parseFloat(document.getElementById('LongDurationLoad').value);
     const allowable_Deflection = parseFloat(document.getElementById('Allowable_Deflection').value) || 0;
     const glassLength = parseFloat(document.getElementById('glassLength').value) || 0;
     const glassWidth = parseFloat(document.getElementById('glassWidth').value) || 0;
@@ -86,7 +124,9 @@ function gatherDataFromInput() {
             inputParams.layersThicknesses.push(pliesTotalThickness);
         }
     }
-    console.log("Updated inputParams: ", inputParams);
+//    console.log("Updated inputParams: ", inputParams);
+    // Show the spinner before sending the request
+    showSpinner();
     sendToServer(inputParams);
 }
 
@@ -119,5 +159,9 @@ function sendToServer(data) {
     .catch(error => {
         console.error('Error sending data to the server:', error);
         document.getElementById('results').textContent = 'Error: ' + error.message;
+    })
+    .finally(() => {
+        // Hide the spinner once the request is complete
+        hideSpinner();
     });
 }

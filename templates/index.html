@@ -24,7 +24,7 @@
 
                     <div class="form-group">
                         <label for="LongDurationLoad">Long Duration Load (30 Days)</label>
-                        <input type="number" id="LongDurationLoad" name="LongDurationLoad" required>
+                        <input type="number" id="LongDurationLoad" name="LongDurationLoad">
                     </div>
 
                     <div class="form-group">
@@ -52,7 +52,7 @@
                     </div>
                     <div class="form-group">
                         <label for="glazingType">Glazing Type</label>
-                        <select id="glazingType" name="glazingType" required onchange="updateGlazingType()">
+                        <select id="glazingType" name="glazingType" onchange="updateGlazingType()" required>
                             <option value="">Choose Glazing</option>
                             <option value="single">Single Glazed</option>
                             <option value="double">Double Glazed</option>
@@ -64,13 +64,21 @@
                     <div id="layerInputs"></div>
                 </div>
             </div>
-            <button type="button" onclick="gatherDataFromInput()" class="btn">Calculate</button>
+            <button type="button" onclick="validateAndDownload()" class="btn">Calculate</button>
         </form>
+        <div id="spinner" class="spinner-container" style="display: none;">
+            <div class="spinner"></div>
+        </div>
         <div class="results" id="results"></div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="/static/scripts/script.js"></script>
-    <script src="/static/scripts/ui.js"></script>
+    <script src="./static/scripts/ui.js"></script>
+    <script src="./static/scripts/script.js"></script>
+
+    <script>
+        <!--// Initialize input event listeners when the DOM is fully loaded-->
+        document.addEventListener('DOMContentLoaded', addInputEventListeners);
+    </script>
 </body>
 </html>

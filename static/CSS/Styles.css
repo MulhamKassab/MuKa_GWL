@@ -89,6 +89,18 @@ input[type="number"]:hover, input[type="number"]:focus, select:hover, select:foc
     outline: none; /* Remove default focus outline */
 }
 
+.input-error {
+    border: 2px solid red;
+    background-color: #ffe6e6;
+}
+
+.input-changed {
+    border: 2px solid green; /* Highlight modified fields */
+    background-color: #e6ffe6; /* Light green background */
+    transition: all 0.3s ease; /* Smooth transition */
+}
+
+
 .btn {
     display: block;
     width: 100%;
@@ -151,4 +163,28 @@ select:hover, select:focus {
 :root {
     --red-color: #dd1d21;
     --white-color: #ffffff;
+}
+
+/* Spinner Container */
+.spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px; /* Height of the spinner container */
+    margin-top: 20px; /* Adjust the margin as needed */
+}
+
+/* Spinner Styles */
+.spinner {
+    border: 8px solid #f3f3f3; /* Light grey */
+    border-top: 8px solid #dd1d21; /* Gutmann red for the spinner */
+    border-radius: 50%;
+    width: 60px; /* Width of the spinner */
+    height: 60px; /* Height of the spinner */
+    animation: spin 1.0s linear infinite; /* Animation for spinning */
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
