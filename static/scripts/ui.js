@@ -1,3 +1,31 @@
+function updateSupportedSides() {
+    const supportedSides = document.getElementById('numberOfSupportedSides').value;
+
+    // Update Length and Width Labels
+    const lengthLabel = document.querySelector('label[for="glassLength"]');
+    const widthLabel = document.querySelector('label[for="glassWidth"]');
+    const widthInput = document.getElementById('glassWidth');
+
+    if (supportedSides === "1") {
+        lengthLabel.textContent = "Unsupported Length (mm)";
+        widthLabel.style.display = "none"; // Hide width field for 1-sided support
+        widthInput.style.display = "none";
+        widthInput.removeAttribute('required'); // Remove the required attribute
+    } else if (supportedSides === "2") {
+        lengthLabel.textContent = "Unsupported Length (mm)";
+        widthLabel.textContent = "Supported Length (mm)";
+        widthLabel.style.display = "block"; // Show width field for 2-sided support
+        widthInput.style.display = "block";
+        widthInput.setAttribute('required', 'required'); // Add the required attribute
+    } else if (supportedSides === "4") {
+        lengthLabel.textContent = "Length (mm)";
+        widthLabel.textContent = "Width (mm)";
+        widthLabel.style.display = "block"; // Show width field for 4-sided support
+        widthInput.style.display = "block";
+        widthInput.setAttribute('required', 'required'); // Add the required attribute
+    }
+}
+
 function updateGlazingType() {
     const glazingType = document.getElementById('glazingType').value;
     const layerInputsContainer = document.getElementById('layerInputs');

@@ -33,22 +33,23 @@
                     </div>
 
                     <div class="form-group">
+                        <label for="numberOfSupportedSides">Number of Supported Sides</label>
+                        <select id="numberOfSupportedSides" name="numberOfSupportedSides" onchange="updateSupportedSides()" required>
+                            <option value="0">Number of supported sides</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+<!--                            <option value="3">3</option>-->
+                            <option value="4">4</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
                         <label for="glassLength">Glass Length (mm)</label>
                         <input type="number" id="glassLength" name="glassLength" required>
                     </div>
                     <div class="form-group">
                         <label for="glassWidth">Glass Width (mm)</label>
                         <input type="number" id="glassWidth" name="glassWidth" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="numberOfSupportedSides">Number of Supported Sides</label>
-                        <select id="numberOfSupportedSides" name="numberOfSupportedSides" required>
-                            <option value="0">Number of supported sides</option>
-<!--                            <option value="1">1</option>-->
-<!--                            <option value="2">2</option>-->
-<!--                            <option value="3">3</option>-->
-                            <option value="4">4</option>
-                        </select>
                     </div>
                     <div class="form-group">
                         <label for="glazingType">Glazing Type</label>

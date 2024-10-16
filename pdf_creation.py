@@ -61,13 +61,19 @@ def create_pdf(fileobj, glass_length, glass_width, number_of_supported_sides, th
         # Glass Information Section Title
         draw_section_title("Glass Information"), Spacer(1, 12),
         draw_paragraph(f"<b>Long side (mm):</b> {glass_length}", styles['MyNormal']),
-        draw_paragraph(f"<b>Short side (mm):</b> {glass_width}", styles['MyNormal']),
+        # Conditionally add the width only if it's non-zero
         draw_paragraph(f"<b>Supported sides:</b> {number_of_supported_sides}", styles['MyNormal']),
-        # Glass Information Content
         draw_paragraph(f"<b>Allowable deflection (mm):</b> {allowable_Deflection}", styles['MyNormal']),
-        draw_paragraph(f"<b>Glass weight (KG):</b> {glass_weight}", styles['MyNormal']), Spacer(1, 12),
+        draw_paragraph(f"<b>Glass weight (KG):</b> {glass_weight}", styles['MyNormal']),
+        Spacer(1, 12),
         # Layers Information Section Title
-        draw_section_title("Layers Information"), Spacer(1, 12)]
+        draw_section_title("Layers Information"),
+        Spacer(1, 12)
+    ]
+
+    # Conditionally add width paragraph if glass_width is non-zero
+    if glass_width > 0:
+        elements.insert(6, draw_paragraph(f"<b>Short side (mm):</b> {glass_width}", styles['MyNormal']))
 
     # Layers Information Content
     for i, (thickness, construction_type, heat_treatment) in enumerate(
