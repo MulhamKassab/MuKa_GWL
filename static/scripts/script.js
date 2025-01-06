@@ -73,7 +73,7 @@ function gatherDataFromInput() {
     inputParams.glassLayersStrengthType = [];
     inputParams.numberOfPlies = [];
     inputParams.pvbThicknesses = [];  // Clear the pvbThicknesses array
-
+    const plyThicknessList = [];
     // Update inputParams with basic values
     setInputParameters({
         shortDurationLoad,
@@ -109,15 +109,33 @@ function gatherDataFromInput() {
             inputParams.layersTypes.push(layerType);
 
             let pliesTotalThickness = 0;
+            const list4 = [5, 6, 8, 10, 12, 16, 19];
+
             for(let j = 0; j < numberOfPlies; j++) {
                 const plyThickness = parseFloat(document.getElementById(`plyThickness${i}-${j}`).value) || 0;
                 pliesTotalThickness += plyThickness;
+                plyThicknessList.push(plyThickness);
             }
 
+            let totalPvbThicknesses = 0
             for(let k = 0; k < numberOfPlies - 1; k++) {
                 const pvbThickness = parseFloat(document.getElementById(`pvbThickness${i}-${k}`).value) || 0;
                 inputParams.pvbThicknesses.push(pvbThickness); // Add the PVB thickness to the array
+                totalPvbThicknesses += pvbThickness
             }
+
+            // Sum pliesTotalThickness and totalPvbThicknesses
+            const combinedThickness = pliesTotalThickness + totalPvbThicknesses;
+
+            // Function to find the closest value in list4
+            const findClosest = (value, list) => {
+                return list.reduce((a, b) => (Math.abs(b - value) < Math.abs(a - value) ? b : a));
+            };
+
+            // Find the closest value in list4
+            const closestMatch = findClosest(combinedThickness, list4);
+
+            console.log("closestMatch", closestMatch)
 
             const laminatedLayerType = document.getElementById(`laminatedType${i}`).value;
             inputParams.glassLayersStrengthType.push(laminatedLayerType);
@@ -127,12 +145,13 @@ function gatherDataFromInput() {
 //    console.log("Updated inputParams: ", inputParams);
     // Show the spinner before sending the request
     showSpinner();
-    sendToServer(inputParams);
+    sendToServer(inputParams, plyThicknessList);
 }
 
 // Function to send data to the server
-function sendToServer(data) {
-    const jsonData = JSON.stringify(data);
+function sendToServer(data, plyThicknessList) {
+    const combinedData = {data, plyThicknessList};
+    const jsonData = JSON.stringify(combinedData);
     console.log('jsonData = ', jsonData)
     axios.post('/calculate', jsonData, {
         headers: {

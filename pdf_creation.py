@@ -1,7 +1,7 @@
 from reportlab.lib import colors
 from reportlab.lib.colors import HexColor, black, white
 from reportlab.lib.pagesizes import A4
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle, PageBreak
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.enums import TA_LEFT
 
@@ -11,8 +11,9 @@ logo_red = HexColor('#DF0029')  # The red color from the logo
 styles = getSampleStyleSheet()
 styles.add(ParagraphStyle(name='MyBold', fontName='Helvetica-Bold', fontSize=10, spaceAfter=5))
 styles.add(ParagraphStyle(name='MyNormal', fontName='Helvetica', fontSize=10, spaceAfter=5))
-styles.add(ParagraphStyle(name='MainTitle', fontName='Helvetica-Bold', fontSize=18, textColor=logo_red, alignment=TA_LEFT,
-                          spaceAfter=20))
+styles.add(
+    ParagraphStyle(name='MainTitle', fontName='Helvetica-Bold', fontSize=18, textColor=logo_red, alignment=TA_LEFT,
+                   spaceAfter=20))
 styles.add(
     ParagraphStyle(name='SecondTitle', fontName='Helvetica-Bold', fontSize=14, textColor=black, alignment=TA_LEFT,
                    spaceAfter=15))
@@ -31,7 +32,7 @@ def draw_section_title(text):
         ('TEXTCOLOR', (0, 0), (-1, -1), white),  # White text
         ('FONTNAME', (0, 0), (-1, -1), 'Helvetica-Bold'),  # Bold font
         ('FONTSIZE', (0, 0), (-1, -1), 12),  # Font size
-        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),  # Center align text
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),  # Left-align text
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),  # Middle vertical alignment
         ('BOTTOMPADDING', (0, 0), (-1, -1), 5),  # Padding
         ('TOPPADDING', (0, 0), (-1, -1), 5),
@@ -44,45 +45,158 @@ def draw_paragraph(text, style):
 
 
 def add_logo_and_text(canvas, doc, logo_path):
+    # Add logo at the top-right corner
     logo = Image(logo_path, width=70, height=70)
     logo.drawOn(canvas, doc.pagesize[0] - 130, doc.pagesize[1] - 80)  # Positioning the logo
-    canvas.setFont('Helvetica-Bold', 12)
+
+    # Set the font for the footer
+    canvas.setFont('Helvetica', 10)
+
+    # Footer text content
+    footer_text = """Dubai Investment Park 2
+P.O. Box 54563,
+Dubai, UAE
++971 4 88 5333 6
+info@gutmannpvb.com
+www.gutmannpvb.com"""
+
+    # Split footer text into lines and draw each line at the bottom of the page
+    footer_lines = footer_text.split('\n')
+    y_position = 20  # Adjust this to position the footer correctly from the bottom
+    for line in footer_lines:
+        canvas.drawString(40, y_position, line)  # Left-align text starting at x=40
+        y_position += 12  # Adjust spacing between lines
+
+# Function to draw visual glass specification table
+def draw_glass_spec_table(thicknesses, plyThicknessList, pvb_thicknesses, glass_layers_strength_type, heat_treatments):
+    """
+    Generate a single-row table for glass specifications, styled to resemble glass layers with color-coded heat treatments.
+
+    Parameters:
+    - thicknesses: List of total thicknesses of layers.
+    - plyThicknessList: List of individual ply thicknesses for laminated layers.
+    - pvb_thicknesses: List of PVB thicknesses between plies.
+    - glass_layers_strength_type: List of layer types (e.g., 'mono', 'laminated').
+    - heat_treatments: List of heat treatment types corresponding to layers (e.g., 'annealed', 'tempered').
+
+    Returns:
+    - A ReportLab Table object styled to resemble glass layers.
+    """
+    row_data = []
+    layer_colors = []
+
+    # Map heat treatments to colors
+    heat_treatment_colors = {
+        'annealed': HexColor("#B3E5FC"),  # Light blue
+        'tempered': HexColor("#FFCDD2"),  # Light red
+        'heatStrengthened': HexColor("#C8E6C9"),  # Light green
+        'default': HexColor("#E0E0E0")  # Default gray
+    }
+
+    # Populate row data and assign colors based on heat treatments
+    for index, layer_type in enumerate(glass_layers_strength_type):
+        if layer_type == 'mono':
+            row_data.append(thicknesses[index])  # Monolithic layer
+            layer_colors.append(heat_treatment_colors.get(heat_treatments[index], heat_treatment_colors['default']))
+        elif layer_type == 'laminated':
+            ply_index = 0
+            for ply_thickness in plyThicknessList:
+                row_data.append(ply_thickness)  # Ply thickness
+                layer_colors.append(heat_treatment_colors.get(heat_treatments[index], heat_treatment_colors['default']))
+                if ply_index < len(pvb_thicknesses):
+                    row_data.append(pvb_thicknesses[ply_index])  # PVB layer
+                    layer_colors.append(heat_treatment_colors['default'])  # Default for PVB
+                    ply_index += 1
+
+    # Calculate dynamic column widths based on layer thickness
+    MIN_WIDTH = 20
+    MAX_WIDTH = 100
+    col_widths = [
+        max(MIN_WIDTH, min(float(cell) * 10, MAX_WIDTH)) if isinstance(cell, (int, float)) or str(cell).isnumeric() else MIN_WIDTH
+        for cell in row_data
+    ]
+
+    # Define row height
+    row_height = 100
+
+    # Create the table
+    table_data = [row_data]
+    spec_table = Table(table_data, colWidths=col_widths, rowHeights=[row_height])
+
+    # Apply styles for custom appearance
+    table_styles = []
+
+    # Add background colors for each column
+    for col_index, color in enumerate(layer_colors):
+        table_styles.append(('BACKGROUND', (col_index, 0), (col_index, 0), color))
+
+    # Remove grid lines between columns
+    table_styles.append(('LINEBEFORE', (0, 0), (-1, -1), 0, colors.white))  # No line between columns
+    table_styles.append(('LINEAFTER', (0, 0), (-1, -1), 0, colors.white))  # No line after columns
+    table_styles.append(('LINEABOVE', (0, 0), (-1, -1), 0, colors.white))  # No line above rows
+    table_styles.append(('LINEBELOW', (0, 0), (-1, -1), 0, colors.white))  # No line below rows
+
+    # Remove padding between cells
+    table_styles.append(('LEFTPADDING', (0, 0), (-1, -1), 0))
+    table_styles.append(('RIGHTPADDING', (0, 0), (-1, -1), 0))
+    table_styles.append(('TOPPADDING', (0, 0), (-1, -1), 0))
+    table_styles.append(('BOTTOMPADDING', (0, 0), (-1, -1), 0))
+
+    # Alignments and padding
+    table_styles += [
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, -1), 7),
+        ('LEFTPADDING', (0, 0), (-1, -1), 8),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 8),
+    ]
+
+    # Apply the styles to the table
+    spec_table.setStyle(TableStyle(table_styles))
+
+    return spec_table
 
 
-def create_pdf(fileobj, glass_length, glass_width, number_of_supported_sides, thicknesses, glass_weight, short_load,
-               long_load, allowable_Deflection, lr, short_cof,
-               long_cof, construction_types, heat_treatments, logo_path):
+def create_pdf(fileobj, glass_length, glass_width, pvb_thicknesses, number_of_supported_sides, thicknesses,
+               plyThicknessList, glass_weight, short_load, long_load, allowable_Deflection, lr, short_cof, long_cof,
+               glass_layers_strength_type, heat_treatments, logo_path, first_page_image_path):
+
+    print("pvb_thicknesses", pvb_thicknesses)
+    if glass_width > glass_length:
+        glass_length, glass_width = glass_width, glass_length
     doc = SimpleDocTemplate(fileobj, pagesize=A4, topMargin=30)
     elements = [
         draw_paragraph("GUTMANN PVB", styles['MainTitle']),
         draw_paragraph("Load Resistance Report", styles['SecondTitle']),
         draw_paragraph("Based on ASTM E1300", styles['MyNormal']),
         Spacer(1, 20),
-        # Glass Information Section Title
-        draw_section_title("Glass Information"), Spacer(1, 12),
-        draw_paragraph(f"<b>Long side (mm):</b> {glass_length}", styles['MyNormal']),
-        # Conditionally add the width only if it's non-zero
-        draw_paragraph(f"<b>Supported sides:</b> {number_of_supported_sides}", styles['MyNormal']),
-        draw_paragraph(f"<b>Allowable deflection (mm):</b> {allowable_Deflection}", styles['MyNormal']),
-        draw_paragraph(f"<b>Glass weight (KG):</b> {glass_weight}", styles['MyNormal']),
-        Spacer(1, 12),
-        # Layers Information Section Title
-        draw_section_title("Layers Information"),
-        Spacer(1, 12)
     ]
 
-    # Conditionally add width paragraph if glass_width is non-zero
-    if glass_width > 0:
-        elements.insert(6, draw_paragraph(f"<b>Short side (mm):</b> {glass_width}", styles['MyNormal']))
+    # Glass Information and Spec Table Side by Side
+    glass_info_data = [
+        [draw_paragraph(f"<b>Long side (mm):</b> {glass_length}", styles['MyNormal']),
+         draw_paragraph(f"<b>Supported sides:</b> {number_of_supported_sides}", styles['MyNormal']),
+         draw_paragraph(f"<b>Allowable deflection (mm):</b> {allowable_Deflection}", styles['MyNormal']),
+         draw_paragraph(f"<b>Glass weight (KG):</b> {glass_weight}", styles['MyNormal'])]
+    ]
 
+    glass_spec_table = draw_glass_spec_table(thicknesses,plyThicknessList, pvb_thicknesses, glass_layers_strength_type, heat_treatments)
+    glass_info_table = Table([glass_info_data + [glass_spec_table]], colWidths=[150, 150, 150, 150, 150], hAlign="LEFT")
+    glass_info_table.setStyle(TableStyle([
+        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT')
+    ]))
+
+    elements.append(glass_info_table)
+    elements.append(Spacer(1, 20))
     # Layers Information Content
     for i, (thickness, construction_type, heat_treatment) in enumerate(
-            zip(thicknesses, construction_types, heat_treatments)):
+            zip(thicknesses, glass_layers_strength_type, heat_treatments)):
         elements.append(draw_paragraph(f"Layer {i + 1}:", styles['MySubTitle']))
         elements.append(draw_paragraph(
             f"<b>Thickness</b> = {thickness} mm, <b>Lite Type</b> = {construction_type}, <b>Heat Treatment</b> = {heat_treatment}",
             styles['MyNormal']))
-
     elements.append(Spacer(1, 12))
 
     elements.append(draw_paragraph("Applied Loads:", styles['MySubTitle']))
@@ -176,8 +290,12 @@ def create_pdf(fileobj, glass_length, glass_width, number_of_supported_sides, th
     elements.append(result_table_deflection)
     elements.append(Spacer(1, 12))
 
-    elements.append(draw_paragraph("Notes:", styles['MyBold']))
-    elements.append(draw_paragraph("Load resistance values are computed in accordance with ASTM E1300", styles['MyNormal']))
+    # Add the first page image directly on the canvas
+    def draw_first_page(canvas, doc):
+        canvas.drawImage(first_page_image_path, 0, 0, width=A4[0], height=A4[1])
 
-    doc.build(elements, onFirstPage=lambda canvas, doc1: add_logo_and_text(canvas, doc1, logo_path),
+    # Ensure content starts on a new page
+    elements.insert(0, PageBreak())
+
+    doc.build(elements, onFirstPage=draw_first_page,  # Full-page image on the first page
               onLaterPages=lambda canvas, doc1: add_logo_and_text(canvas, doc1, logo_path))

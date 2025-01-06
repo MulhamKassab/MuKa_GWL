@@ -26,31 +26,41 @@ def calculate():
     if not data:
         return jsonify({"error": "No data provided"}), 400
 
+    # Extract the original data and plyThicknessList from the combined structure
+    input_data = data.get('data', {})
+
+    # Validate that input_data is a dictionary
+    if not isinstance(input_data, dict):
+        return jsonify({"error": "Invalid data format"}), 400
+
     modulus_of_elasticity = 71700000
-    shortDurationLoad = data.get('shortDurationLoad', 0)
-    longDurationLoad = data.get('longDurationLoad', 0)
-    allowable_Deflection = data.get('allowable_Deflection', 0)
-    glass_length = data.get('glassLength', 0)
-    glass_width = data.get('glassWidth', 0)
-    number_of_supported_sides = data.get('numberOfSupportedSides', 0)
-    glazing_type = data.get('glazingType', 0)
-    number_of_layers = data.get('numberOfLayers', 0)
-    layers_types = data.get('layersTypes', [])
-    layers_thicknesses = data.get('layersThicknesses', [])
-    glass_layers_strength_type = data.get('glassLayersStrengthType', [])
-    number_of_plies = data.get('numberOfPlies', 0)
-    pvb_thicknesses = data.get('pvbThicknesses', [])  # Retrieve the PVB thicknesses sent from JS
+    shortDurationLoad = input_data.get('shortDurationLoad', 0)
+    longDurationLoad = input_data.get('longDurationLoad', 0)
+    allowable_Deflection = input_data.get('allowable_Deflection', 0)
+    glass_length = input_data.get('glassLength', 0)
+    glass_width = input_data.get('glassWidth', 0)
+    number_of_supported_sides = input_data.get('numberOfSupportedSides', 0)
+    glazing_type = input_data.get('glazingType', 0)
+    number_of_layers = input_data.get('numberOfLayers', 0)
+    layers_types = input_data.get('layersTypes', [])
+    layers_thicknesses = input_data.get('layersThicknesses', [])
+    plyThicknessList = data.get('plyThicknessList', [])
+    glass_layers_strength_type = input_data.get('glassLayersStrengthType', [])
+    number_of_plies = input_data.get('numberOfPlies', 0)
+    pvb_thicknesses = input_data.get('pvbThicknesses', [])  # Retrieve the PVB thicknesses sent from JS
+    first_page_image_path = "download/first_page.jpg"
 
     nfl_result = []
     gtf = get_gtf_value(glass_layers_strength_type, glazing_type)
     short_cof_to_send = []
     long_cof_to_send = []
     lr = []
-
+    lr_value = 0
     # Generate plot and save as image
     temp__dir = os.path.join(os.getcwd(), "download")
     os.makedirs(temp__dir, exist_ok=True)
     logo_path = os.path.join(temp__dir, "logo.png")
+    first_page_image_path = os.path.join(temp__dir, "first_page.jpg")
 
 
     # Perform NFL calculation for each layer's thickness
@@ -62,16 +72,27 @@ def calculate():
                 nfl_result.append(round(float(NFL_interpolated), 2))  # Convert to float
             else:
                 return result
+            try:
+                cof_short_duration = round(
+                    float(calculate_cof(shortDurationLoad, glass_length, glass_width, modulus_of_elasticity, thickness)), 2)
+                short_cof_to_send.append(cof_short_duration)
 
-            cof_short_duration = round(
-                float(calculate_cof(shortDurationLoad, glass_length, glass_width, modulus_of_elasticity, thickness)), 2)
-            short_cof_to_send.append(cof_short_duration)
+                if longDurationLoad != 0:
+                    cof_long_duration = round(
+                        float(calculate_cof(longDurationLoad, glass_length, glass_width, modulus_of_elasticity, thickness)),
+                        2)
+                    long_cof_to_send.append(cof_long_duration)
+            except ValueError:
+                if number_of_supported_sides == 4:
+                    return jsonify("Adjust the width or the length of the glass"), 400
+                else:
+                    return jsonify("Adjust the length of the unsupported side"), 400
 
-            if longDurationLoad != 0:
-                cof_long_duration = round(
-                    float(calculate_cof(longDurationLoad, glass_length, glass_width, modulus_of_elasticity, thickness)),
-                    2)
-                long_cof_to_send.append(cof_long_duration)
+            except TypeError:
+                if number_of_supported_sides == 4:
+                    return jsonify("Adjust the widt or the length of the glass"), 400
+                else:
+                    return jsonify("Adjust the length of the unsupported side"), 400
 
         try:
             # calculated_nfl = nfl_result[0] if isinstance(nfl_result, list) and nfl_result else nfl_result
@@ -126,10 +147,12 @@ def calculate():
         glass_length, glass_width, layers_thicknesses, layers_types, pvb_thicknesses=pvb_thicknesses
     )
 
-    create_pdf(pdf_bytes, glass_length, glass_width, number_of_supported_sides, layers_thicknesses, glass_weight,
-               shortDurationLoad, longDurationLoad, allowable_Deflection, lr,
+    print("layers_types", layers_types)
+
+    create_pdf(pdf_bytes, glass_length, glass_width, pvb_thicknesses, number_of_supported_sides, layers_thicknesses,
+               plyThicknessList, glass_weight, shortDurationLoad, longDurationLoad, allowable_Deflection, lr,
                short_cof_to_send, long_cof_to_send, layers_types,
-               glass_layers_strength_type, logo_path)
+               glass_layers_strength_type, logo_path, first_page_image_path)
     pdf_bytes.seek(0)
 
     # Save PDF to a temporary location

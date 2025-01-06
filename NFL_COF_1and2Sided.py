@@ -99,9 +99,9 @@ def find_load_for_given_length(thickness, length, layer_type, supported_sides, n
 
 # Example usage:
 if __name__ == "__main__":
-    thickness = 8
-    length = 2000  # Length in mm
-    layer_type = "mono"  # mono or laminated
+    thickness = 6
+    length = 1200  # Length in mm
+    layer_type = "laminated"  # mono or laminated
     supported_sides = "2"  # 1 or 2
     nfl_or_cof = "COF"  # NFL or COF
     load = 3  # Load value
