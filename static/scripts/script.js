@@ -18,10 +18,15 @@ function validateAndDownload() {
     const requiredFields = document.querySelectorAll('input[required], select[required]');
     let allFilled = true;
 
+    // Remove previous highlights and clear error messages
     requiredFields.forEach(field => {
-        field.classList.remove('input-error'); // Remove previous highlights
+        field.classList.remove('input-error');
     });
 
+    const resultsDiv = document.getElementById('results');
+    resultsDiv.innerHTML = ''; // Clear previous messages
+
+    // Check for empty fields
     requiredFields.forEach(field => {
         if (field.value.trim() === '') {
             field.classList.add('input-error'); // Highlight empty fields
@@ -29,17 +34,29 @@ function validateAndDownload() {
         }
     });
 
-    const resultsDiv = document.getElementById('results');
-    resultsDiv.innerHTML = ''; // Clear previous messages
+    // Validate Short Duration Load is not zero
+    const shortDurationLoadField = document.getElementById('ShortDurationLoad');
+    const shortDurationLoad = parseFloat(shortDurationLoadField.value) || 0;
+
+    if (shortDurationLoad <= 0) {
+        shortDurationLoadField.classList.add('input-error'); // Highlight the field
+        allFilled = false;
+
+        const errorMessage = document.createElement('div');
+        errorMessage.textContent = "Short Duration Load must be greater than zero.";
+        errorMessage.style.color = "red";
+        errorMessage.style.fontWeight = "bold";
+        resultsDiv.appendChild(errorMessage);
+    }
 
     if (allFilled) {
         gatherDataFromInput(); // Continue with the normal download process
     } else {
-        const errorMessage = document.createElement('div');
-        errorMessage.textContent = "Please fill in all required fields.";
-        errorMessage.style.color = "red";
-        errorMessage.style.fontWeight = "bold";
-        resultsDiv.appendChild(errorMessage);
+        const generalErrorMessage = document.createElement('div');
+        generalErrorMessage.textContent = "Please correct the highlighted errors.";
+        generalErrorMessage.style.color = "red";
+        generalErrorMessage.style.fontWeight = "bold";
+        resultsDiv.appendChild(generalErrorMessage);
     }
 }
 
@@ -150,9 +167,10 @@ function gatherDataFromInput() {
 
 // Function to send data to the server
 function sendToServer(data, plyThicknessList) {
-    const combinedData = {data, plyThicknessList};
+    const combinedData = { data, plyThicknessList };
     const jsonData = JSON.stringify(combinedData);
-    console.log('jsonData = ', jsonData)
+    console.log('jsonData = ', jsonData);
+
     axios.post('/calculate', jsonData, {
         headers: {
             'Content-Type': 'application/json'
@@ -177,7 +195,21 @@ function sendToServer(data, plyThicknessList) {
     })
     .catch(error => {
         console.error('Error sending data to the server:', error);
-        document.getElementById('results').textContent = 'Error: ' + error.message;
+
+        // Extract the backend message and display it in the results div
+        const errorMessage = error.response?.data || "An unexpected error occurred. Please try again.";
+        const resultsDiv = document.getElementById('results');
+        resultsDiv.innerHTML = `<div class="error-message">${errorMessage}</div>`; // Here is where this line is placed
+
+         // Check if the error relates to width or length
+        if (errorMessage.includes('width') || errorMessage.includes('length')) {
+            const widthField = document.getElementById('glassWidth');
+            const lengthField = document.getElementById('glassLength');
+
+            // Highlight the fields with an error
+            if (widthField) widthField.classList.add('input-error');
+            if (lengthField) lengthField.classList.add('input-error');
+        }
     })
     .finally(() => {
         // Hide the spinner once the request is complete

@@ -172,6 +172,23 @@ select:hover, select:focus {
     margin-top: 20px; /* Adjust the margin as needed */
 }
 
+.input-error {
+    border: 2px solid red;
+    background-color: #ffe6e6; /* Light red background for errors */
+}
+
+.input-success {
+    border: 2px solid green;
+    background-color: #e6ffe6; /* Light green background for valid fields */
+}
+
+.error-message {
+    color: red;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+
 /* Spinner Styles */
 .spinner {
     border: 8px solid #f3f3f3; /* Light grey */
