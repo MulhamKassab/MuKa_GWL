@@ -98,9 +98,9 @@ function updateLayerDetails(layerIndex) {
                 <label for="monoType${layerIndex}">Glass Strength of Layer ${layerIndex + 1}:</label>
                 <select id="monoType${layerIndex}" name="monoType${layerIndex}" required>
                     <option value="">Select Type</option>
-                    <option value="annealed">Annealed</option>
-                    <option value="heatStrengthened">Heat Strengthened</option>
-                    <option value="tempered">Tempered</option>
+                    <option value="Annealed">Annealed</option>
+                    <option value="Heat strengthened">Heat Strengthened</option>
+                    <option value="Tempered">Tempered</option>
                 </select>
             </div>
         `;
@@ -149,8 +149,8 @@ function updatePlys(layerIndex) {
     ];
 
     // Define the options for the PVB thickness dropdown with formatted values
-    const pvbOptions = [
-        {value: null, display: 'Select PVB thickness'},
+    const interlayerThicknessOptions = [
+        {value: null, display: 'Select interlayer thickness'},
         {value: 0.381, display: '0.381 mm'},
         {value: 0.762, display: '0.762 mm'},
         {value: 1.143, display: '1.143 mm'},
@@ -159,6 +159,12 @@ function updatePlys(layerIndex) {
         {value: 2.286, display: '2.286 mm'},
         {value: 2.667, display: '2.667 mm'},
         {value: 3.048, display: '3.048 mm'}
+    ];
+
+    // Define the options for the PVB/SGP interlayer dropdown
+    const interlayerOptions = [
+        {value: 'PVB', display: 'PVB'},
+        {value: 'SGP', display: 'SGP'}
     ];
 
     // Loop through each ply and create a dropdown for the thickness
@@ -174,9 +180,15 @@ function updatePlys(layerIndex) {
         if (i < numPlys - 1) {
             plyDetailsContainer.innerHTML += `
                 <div class="form-group">
-                    <label for="pvbThickness${layerIndex}-${i}">PVB Thickness (mm) after Ply ${i + 1}:</label>
-                    <select id="pvbThickness${layerIndex}-${i}" name="pvbThickness${layerIndex}-${i}" required>
-                        ${pvbOptions.map(option => `<option value="${option.value}">${option.display}</option>`).join('')}
+                    <label for="interlayerType${layerIndex}-${i}">Interlayer Type:</label>
+                    <select id="interlayerType${layerIndex}-${i}" name="interlayerType${layerIndex}-${i}" required>
+                        ${interlayerOptions.map(option => `<option value="${option.value}">${option.display}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="interlayerThickness${layerIndex}-${i}">Interlayer Thickness (mm):</label>
+                    <select id="interlayerThickness${layerIndex}-${i}" name="interlayerThickness${layerIndex}-${i}" required>
+                        ${interlayerThicknessOptions.map(option => `<option value="${option.value}">${option.display}</option>`).join('')}
                     </select>
                 </div>
             `;

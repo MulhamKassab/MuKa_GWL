@@ -48,6 +48,7 @@ def calculate():
     glass_layers_strength_type = input_data.get('glassLayersStrengthType', [])
     number_of_plies = input_data.get('numberOfPlies', 0)
     pvb_thicknesses = input_data.get('pvbThicknesses', [])  # Retrieve the PVB thicknesses sent from JS
+    interlayerTypes = input_data.get('interlayerTypes', [])
     first_page_image_path = "download/first_page.jpg"
 
     nfl_result = []
@@ -113,13 +114,16 @@ def calculate():
     else:
         for thickness, layer_type in zip(layers_thicknesses, layers_types):
             nfl_result.append(find_load_for_given_length(thickness, glass_length, layer_type,
-                                                         number_of_supported_sides, "NFL", 0))
+                                                         number_of_supported_sides, "NFL", 0,
+                                                         interlayerTypes))
 
             short_cof_to_send.append(find_load_for_given_length(thickness, glass_length, layer_type,
-                                                                number_of_supported_sides, "COF", shortDurationLoad))
+                                                                number_of_supported_sides, "COF", shortDurationLoad,
+                                                                interlayerTypes))
             if longDurationLoad != 0:
                 long_cof_to_send.append(find_load_for_given_length(thickness, glass_length, layer_type,
-                                                                   number_of_supported_sides, "COF", longDurationLoad))
+                                                                   number_of_supported_sides, "COF", longDurationLoad,
+                                                                   interlayerTypes))
 
     # Load share factor (LSF) and LR calculations
     if glazing_type == "double":

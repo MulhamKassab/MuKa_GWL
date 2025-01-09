@@ -11,7 +11,8 @@ const inputParams = {
     layersThicknesses: [],
     glassLayersStrengthType: [],
     numberOfPlies: [],
-    pvbThicknesses: [] // Array for PVB thicknesses
+    pvbThicknesses: [], // Array for PVB thicknesses
+    interlayerTypes: []
 };
 
 function validateAndDownload() {
@@ -89,7 +90,8 @@ function gatherDataFromInput() {
     inputParams.layersThicknesses = [];
     inputParams.glassLayersStrengthType = [];
     inputParams.numberOfPlies = [];
-    inputParams.pvbThicknesses = [];  // Clear the pvbThicknesses array
+    inputParams.pvbThicknesses = [];
+    inputParams.interlayerTypes = [];
     const plyThicknessList = [];
     // Update inputParams with basic values
     setInputParameters({
@@ -105,7 +107,8 @@ function gatherDataFromInput() {
         layersThicknesses: [],
         glassLayersStrengthType: [],
         numberOfPlies: [],
-        pvbThicknesses: [] // Add the PVB thicknesses array
+        pvbThicknesses: [],
+        interlayerTypes: []
     });
 
     // Loop through each layer
@@ -126,7 +129,12 @@ function gatherDataFromInput() {
             inputParams.layersTypes.push(layerType);
 
             let pliesTotalThickness = 0;
-            const list4 = [5, 6, 8, 10, 12, 16, 19];
+
+            const lami_1_2_sided_nominal = [5.56, 7.42, 9.02, 11.91, 15.09, 18.26,20];
+            const lami_4_sided_nominal = [4.57,5.56, 7.42, 9.02, 11.91, 15.09, 18.26,20];
+
+            const lami_1_2_sided = [6, 8, 10, 12, 16, 19,20];
+            const lami_4_sided = [5, 6, 8, 10, 12, 16, 19,20];
 
             for(let j = 0; j < numberOfPlies; j++) {
                 const plyThickness = parseFloat(document.getElementById(`plyThickness${i}-${j}`).value) || 0;
@@ -136,27 +144,60 @@ function gatherDataFromInput() {
 
             let totalPvbThicknesses = 0
             for(let k = 0; k < numberOfPlies - 1; k++) {
-                const pvbThickness = parseFloat(document.getElementById(`pvbThickness${i}-${k}`).value) || 0;
-                inputParams.pvbThicknesses.push(pvbThickness); // Add the PVB thickness to the array
-                totalPvbThicknesses += pvbThickness
+                const pvbThickness = parseFloat(document.getElementById(`interlayerThickness${i}-${k}`).value) || 0;
+                const interlayerType = document.getElementById(`interlayerType${i}-${k}`).value; // New: Collect interlayer type
+                inputParams.pvbThicknesses.push(pvbThickness); // Add the PVB/SGP thickness to the array
+                inputParams.interlayerTypes.push(interlayerType);
+                console.log(pvbThickness)
+            }
+            // Check if PVB thicknesses need to be included in combinedThickness
+            let combinedThickness;
+            let targetNominalList;
+            let targetList;
+
+            if (totalPvbThicknesses > 1.542) {
+                // Include PVB thicknesses in combinedThickness and match with the nominal list
+                combinedThickness = pliesTotalThickness + totalPvbThicknesses;
+                console.log("Combined Thickness with PVB:", combinedThickness);
+
+                // Use the nominal list for matching
+                targetNominalList = numberOfSupportedSides < 4 ? lami_1_2_sided_nominal : lami_4_sided_nominal;
+                targetList = numberOfSupportedSides < 4 ? lami_1_2_sided : lami_4_sided;
+            } else {
+                // Use only pliesTotalThickness and match directly with the normal list
+                combinedThickness = pliesTotalThickness;
+                console.log("Combined Thickness without PVB:", combinedThickness);
+
+                // Use the normal list for matching
+                targetList = numberOfSupportedSides < 4 ? lami_1_2_sided : lami_4_sided;
             }
 
-            // Sum pliesTotalThickness and totalPvbThicknesses
-            const combinedThickness = pliesTotalThickness + totalPvbThicknesses;
-
-            // Function to find the closest value in list4
+            // Find the closest match
             const findClosest = (value, list) => {
-                return list.reduce((a, b) => (Math.abs(b - value) < Math.abs(a - value) ? b : a));
+                return list.reduce((a, b) => (Math.abs(b - value) * 0.7 < Math.abs(a - value) ? b : a));
             };
 
-            // Find the closest value in list4
-            const closestMatch = findClosest(combinedThickness, list4);
+            let closestMatch;
+            if (totalPvbThicknesses > 1.542) {
+                // Match with the nominal list
+                const closestIndex = targetNominalList.reduce((closestIndex, currentValue, currentIndex) => {
+                    const closestValue = targetNominalList[closestIndex];
+                    return Math.abs(currentValue - combinedThickness) < Math.abs(closestValue - combinedThickness)
+                        ? currentIndex
+                        : closestIndex;
+                }, 0);
+                closestMatch = targetList[closestIndex];
+            } else {
+                // Match directly with the normal list
+                closestMatch = findClosest(combinedThickness, targetList);
+            }
 
-            console.log("closestMatch", closestMatch)
-
+            // Push the results
             const laminatedLayerType = document.getElementById(`laminatedType${i}`).value;
             inputParams.glassLayersStrengthType.push(laminatedLayerType);
-            inputParams.layersThicknesses.push(pliesTotalThickness);
+            inputParams.layersThicknesses.push(closestMatch);
+            console.log("Closest Match:", closestMatch);
+
         }
     }
 //    console.log("Updated inputParams: ", inputParams);
