@@ -98,9 +98,9 @@ function updateLayerDetails(layerIndex) {
                 <label for="monoType${layerIndex}">Glass Strength of Layer ${layerIndex + 1}:</label>
                 <select id="monoType${layerIndex}" name="monoType${layerIndex}" required>
                     <option value="">Select Type</option>
-                    <option value="Annealed">Annealed</option>
-                    <option value="Heat strengthened">Heat Strengthened</option>
-                    <option value="Tempered">Tempered</option>
+                    <option value="annealed">Annealed</option>
+                    <option value="heatStrengthened">Heat Strengthened</option>
+                    <option value="tempered">Tempered</option>
                 </select>
             </div>
         `;
