@@ -52,20 +52,20 @@ def add_logo_and_text(canvas, doc, logo_path):
     # Set the font for the footer
     canvas.setFont('Helvetica', 10)
 
-    # Footer text content
-    footer_text = """Dubai Investment Park 2
-P.O. Box 54563,
-Dubai, UAE
-+971 4 88 5333 6
-info@gutmannpvb.com
-www.gutmannpvb.com"""
-
-    # Split footer text into lines and draw each line at the bottom of the page
-    footer_lines = footer_text.split('\n')
-    y_position = 20  # Adjust this to position the footer correctly from the bottom
-    for line in footer_lines:
-        canvas.drawString(40, y_position, line)  # Left-align text starting at x=40
-        y_position += 12  # Adjust spacing between lines
+#     # Footer text content
+#     footer_text = """Dubai Investment Park 2
+# P.O. Box 54563,
+# Dubai, UAE
+# +971 4 88 5333 6
+# info@gutmannpvb.com
+# www.gutmannpvb.com"""
+#
+#     # Split footer text into lines and draw each line at the bottom of the page
+#     footer_lines = footer_text.split('\n')
+#     y_position = 20  # Adjust this to position the footer correctly from the bottom
+#     for line in footer_lines:
+#         canvas.drawString(40, y_position, line)  # Left-align text starting at x=40
+#         y_position += 12  # Adjust spacing between lines
 
 # Function to draw visual glass specification table
 def draw_glass_spec_table(thicknesses, plyThicknessList, pvb_thicknesses, glass_layers_strength_type, heat_treatments):
@@ -169,6 +169,7 @@ def create_pdf(fileobj, glass_length, glass_width, pvb_thicknesses, number_of_su
     elements = [
         draw_paragraph("GUTMANN PVB", styles['MainTitle']),
         draw_paragraph("Load Resistance Report", styles['SecondTitle']),
+        draw_paragraph("Under test calculator", styles['SecondTitle']),
         draw_paragraph("Based on ASTM E1300", styles['MyNormal']),
         Spacer(1, 20),
     ]
