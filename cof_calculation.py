@@ -96,7 +96,7 @@ def calculate_center_of_deflection(r0, r1, r2, thickness, x):
     return thickness * math.exp(r0 + r1 * x + r2 * x ** 2)
 
 
-def calculate_cof(literal_load, length, width, modulus_of_elasticity, nominal_thickness):
+def calculate_cof(literal_load, length, width, modulus_of_elasticity, nominal_thickness, interlayerTypes):
     """
     Main function to calculate the center of glass deflection (COF).
 
@@ -127,8 +127,11 @@ def calculate_cof(literal_load, length, width, modulus_of_elasticity, nominal_th
     r0, r1, r2 = calculate_coefficients(length, width)
 
     # Calculate the x-value for the COF equation
-    x = calculate_x_value(literal_load, length, width, modulus_of_elasticity, minimum_thickness)
+    if interlayerTypes == "SGP":
+        modulus_of_elasticity = 78000000
 
+    x = calculate_x_value(literal_load, length, width, modulus_of_elasticity, minimum_thickness)
     # Calculate and return the center of deflection (COF)
     cof = calculate_center_of_deflection(r0, r1, r2, minimum_thickness, x)
+
     return cof

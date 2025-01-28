@@ -19,10 +19,6 @@ def calculate_lr(nfl_result, gtf, lsf_value, glazing_type):
               For single glazing, each duration will have one LR value.
     """
 
-    # Debugging: print the input values for reference
-    print("nfl_result", nfl_result)
-    print("gtf", gtf)
-    print("lsf_value", lsf_value)
 
     # Initialize a dictionary to store the final LR results
     lr_result = {}
@@ -58,8 +54,6 @@ def calculate_lr(nfl_result, gtf, lsf_value, glazing_type):
             # For single glazing, multiply NFL result by GTF values
             lr_result[duration] = [nfl_result * g for g in gtf_duration]
 
-    # Debugging: print the final LR result for reference
-    print("lr_result", lr_result)
 
     # Return the calculated LR results
     return lr_result

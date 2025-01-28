@@ -162,7 +162,6 @@ def create_pdf(fileobj, glass_length, glass_width, pvb_thicknesses, number_of_su
                plyThicknessList, glass_weight, short_load, long_load, allowable_Deflection, lr, short_cof, long_cof,
                glass_layers_strength_type, heat_treatments, logo_path, first_page_image_path):
 
-    print("pvb_thicknesses", pvb_thicknesses)
     if glass_width > glass_length:
         glass_length, glass_width = glass_width, glass_length
     doc = SimpleDocTemplate(fileobj, pagesize=A4, topMargin=30)
@@ -177,6 +176,7 @@ def create_pdf(fileobj, glass_length, glass_width, pvb_thicknesses, number_of_su
     # Glass Information and Spec Table Side by Side
     glass_info_data = [
         [draw_paragraph(f"<b>Long side (mm):</b> {glass_length}", styles['MyNormal']),
+         draw_paragraph(f"<b>short side (mm):</b> {glass_width}", styles['MyNormal']),
          draw_paragraph(f"<b>Supported sides:</b> {number_of_supported_sides}", styles['MyNormal']),
          draw_paragraph(f"<b>Allowable deflection (mm):</b> {allowable_Deflection}", styles['MyNormal']),
          draw_paragraph(f"<b>Glass weight (KG):</b> {glass_weight}", styles['MyNormal'])]

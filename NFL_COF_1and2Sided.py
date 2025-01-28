@@ -16,6 +16,9 @@ def load_json_file(layer_type, supported_sides, nfl_or_cof, interlayerTypes, bas
     Returns:
         dict or str: The data dictionary inside the top-level key, or an error message.
     """
+
+    if not interlayerTypes:
+        interlayerTypes.append("PVB")
     # Build the file path based on the parameters
     if nfl_or_cof == "NFL":
         file_path = os.path.join(
@@ -124,4 +127,3 @@ if __name__ == "__main__":
     interlayerTypes = "SGP"
 
     result = find_load_for_given_length(thickness, length, layer_type, supported_sides, nfl_or_cof, load, interlayerTypes)
-    print(result)

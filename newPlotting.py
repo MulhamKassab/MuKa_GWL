@@ -293,9 +293,9 @@ def plot_nfl_from_json(length, width, supported_sides, layer_thickness, save_pat
     plt.close()
 
     plot_image_paths.append(current_plot_path)
-    print(f"math NFL = {calculated_nfl[index]}")
-    print("4 points NFL2 = ", weighted_nfl_from_nfl_lines)
-    print("weighted_nfl_from_nfl_lines", weighted_nfl_from_nfl_lines)
+    # print(f"math NFL = {calculated_nfl[index]}")
+    # print("4 points NFL2 = ", weighted_nfl_from_nfl_lines)
+    # print("weighted_nfl_from_nfl_lines", weighted_nfl_from_nfl_lines)
 
     # for i in range(len(weighted_nfl_from_nfl_lines)):
     #     weighted_nfl_from_nfl_lines[i] = round(weighted_nfl_from_nfl_lines[i], 2)
