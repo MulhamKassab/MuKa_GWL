@@ -127,11 +127,12 @@ def calculate_cof(literal_load, length, width, modulus_of_elasticity, nominal_th
     r0, r1, r2 = calculate_coefficients(length, width)
 
     # Calculate the x-value for the COF equation
-    if interlayerTypes == "SGP":
+    if interlayerTypes == ["SGP"]:
         modulus_of_elasticity = 78000000
-
     x = calculate_x_value(literal_load, length, width, modulus_of_elasticity, minimum_thickness)
     # Calculate and return the center of deflection (COF)
     cof = calculate_center_of_deflection(r0, r1, r2, minimum_thickness, x)
 
     return cof
+
+print(calculate_x_value(1.5, 1500, 1000, 71700000, 12))
