@@ -11,6 +11,7 @@ logo_red = HexColor('#DF0029')  # The red color from the logo
 styles = getSampleStyleSheet()
 styles.add(ParagraphStyle(name='MyBold', fontName='Helvetica-Bold', fontSize=10, spaceAfter=5))
 styles.add(ParagraphStyle(name='MyNormal', fontName='Helvetica', fontSize=10, spaceAfter=5))
+styles.add(ParagraphStyle(name='MyRedNormal', parent=styles['MyNormal'], textColor=colors.red))
 styles.add(
     ParagraphStyle(name='MainTitle', fontName='Helvetica-Bold', fontSize=18, textColor=logo_red, alignment=TA_LEFT,
                    spaceAfter=20))
@@ -51,6 +52,7 @@ def add_logo_and_text(canvas, doc, logo_path):
 
     # Set the font for the footer
     canvas.setFont('Helvetica', 10)
+
 
 #     # Footer text content
 #     footer_text = """Dubai Investment Park 2
@@ -112,7 +114,8 @@ def draw_glass_spec_table(thicknesses, plyThicknessList, pvb_thicknesses, glass_
     MIN_WIDTH = 20
     MAX_WIDTH = 100
     col_widths = [
-        max(MIN_WIDTH, min(float(cell) * 10, MAX_WIDTH)) if isinstance(cell, (int, float)) or str(cell).isnumeric() else MIN_WIDTH
+        max(MIN_WIDTH, min(float(cell) * 10, MAX_WIDTH)) if isinstance(cell, (int, float)) or str(
+            cell).isnumeric() else MIN_WIDTH
         for cell in row_data
     ]
 
@@ -160,8 +163,7 @@ def draw_glass_spec_table(thicknesses, plyThicknessList, pvb_thicknesses, glass_
 
 def create_pdf(fileobj, glass_length, glass_width, pvb_thicknesses, number_of_supported_sides, thicknesses,
                plyThicknessList, glass_weight, short_load, long_load, allowable_Deflection, lr, short_cof, long_cof,
-               glass_layers_strength_type, heat_treatments, logo_path, first_page_image_path):
-
+               glass_layers_strength_type, recommended_thickness, heat_treatments, logo_path, first_page_image_path):
     if glass_width > glass_length:
         glass_length, glass_width = glass_width, glass_length
     doc = SimpleDocTemplate(fileobj, pagesize=A4, topMargin=30)
@@ -182,7 +184,8 @@ def create_pdf(fileobj, glass_length, glass_width, pvb_thicknesses, number_of_su
          draw_paragraph(f"<b>Glass weight (KG):</b> {glass_weight}", styles['MyNormal'])]
     ]
 
-    glass_spec_table = draw_glass_spec_table(thicknesses,plyThicknessList, pvb_thicknesses, glass_layers_strength_type, heat_treatments)
+    glass_spec_table = draw_glass_spec_table(thicknesses, plyThicknessList, pvb_thicknesses, glass_layers_strength_type,
+                                             heat_treatments)
     glass_info_table = Table([glass_info_data + [glass_spec_table]], colWidths=[150, 150, 150, 150, 150], hAlign="LEFT")
     glass_info_table.setStyle(TableStyle([
         ('VALIGN', (0, 0), (-1, -1), 'TOP'),
@@ -290,6 +293,15 @@ def create_pdf(fileobj, glass_length, glass_width, pvb_thicknesses, number_of_su
     # Add the second table to elements (Deflection and Allowable Deflection)
     elements.append(result_table_deflection)
     elements.append(Spacer(1, 12))
+
+    # Add Recommended thickness after the Deflection table if necessary
+    for duration, cof_values, loads in [("Short", short_cof, short_load), ("Long", long_cof, long_load)]:
+        accepted = all(cof <= allowable_Deflection for cof in cof_values)
+        if not accepted and recommended_thickness[duration]:
+            elements.append(Paragraph(
+                f"NOTE: Recommended thickness for {duration} Duration Load to make accepted is: {recommended_thickness[duration]}",
+                styles['MyRedNormal']))
+            elements.append(Spacer(1, 12))
 
     # Add the first page image directly on the canvas
     def draw_first_page(canvas, doc):

@@ -10,6 +10,7 @@ from newPlotting import plot_nfl_from_json
 from glass_weight import calculate_glass_weight
 from get_load_share_factor import get_load_share_factor
 from NFL_COF_1and2Sided import find_load_for_given_length
+from cof_recommendation import find_correct_thickness
 
 app = Flask(__name__)
 
@@ -57,6 +58,7 @@ def calculate():
     long_cof_to_send = []
     lr = []
     lr_value = 0
+    recommended_thickness = {'Short': [], 'Long': []}
     # Generate plot and save as image
     temp__dir = os.path.join(os.getcwd(), "download")
     os.makedirs(temp__dir, exist_ok=True)
@@ -76,6 +78,7 @@ def calculate():
                 cof_short_duration = round(
                     float(calculate_cof(shortDurationLoad, glass_length, glass_width, modulus_of_elasticity, thickness,
                                         interlayerTypes)), 2)
+
                 short_cof_to_send.append(cof_short_duration)
 
                 if longDurationLoad != 0:
@@ -117,13 +120,17 @@ def calculate():
                                                          number_of_supported_sides, "NFL", 0,
                                                          interlayerTypes))
 
-            short_cof_to_send.append(find_load_for_given_length(thickness, glass_length, layer_type,
-                                                                number_of_supported_sides, "COF", shortDurationLoad,
-                                                                interlayerTypes))
+            cof_short_duration = find_load_for_given_length(thickness, glass_length, layer_type,
+                                                            number_of_supported_sides, "COF", shortDurationLoad,
+                                                            interlayerTypes)
+            short_cof_to_send.append(cof_short_duration)
+
             if longDurationLoad != 0:
-                long_cof_to_send.append(find_load_for_given_length(thickness, glass_length, layer_type,
-                                                                  number_of_supported_sides, "COF", longDurationLoad,
-                                                                   interlayerTypes))
+                cof_long_duration = find_load_for_given_length(thickness, glass_length, layer_type,
+                                                               number_of_supported_sides, "COF", longDurationLoad,
+                                                               interlayerTypes)
+                long_cof_to_send.append(cof_long_duration)
+
     # Load share factor (LSF) and LR calculations
     if glazing_type == "double":
         lsf_value = get_load_share_factor(layers_thicknesses, layers_types)
@@ -150,10 +157,13 @@ def calculate():
         glass_length, glass_width, layers_thicknesses, layers_types, pvb_thicknesses=pvb_thicknesses
     )
 
+    if short_cof_to_send[0] > float(allowable_Deflection) or long_cof_to_send[0] > float(allowable_Deflection):
+        recommended_thickness = find_correct_thickness(shortDurationLoad, longDurationLoad,allowable_Deflection,number_of_supported_sides,
+                               length, width, modulus_of_elasticity,interlayerTypes, layer_type)
 
     create_pdf(pdf_bytes, glass_length, glass_width, pvb_thicknesses, number_of_supported_sides, layers_thicknesses,
                plyThicknessList, glass_weight, shortDurationLoad, longDurationLoad, allowable_Deflection, lr,
-               short_cof_to_send, long_cof_to_send, layers_types,
+               short_cof_to_send, long_cof_to_send, layers_types, recommended_thickness,
                glass_layers_strength_type, logo_path, first_page_image_path)
     pdf_bytes.seek(0)
 
