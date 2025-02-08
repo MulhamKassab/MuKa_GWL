@@ -6,12 +6,8 @@ function updateSupportedSides() {
     const widthLabel = document.querySelector('label[for="glassWidth"]');
     const widthInput = document.getElementById('glassWidth');
 
-    if (supportedSides === "1") {
-        lengthLabel.textContent = "Unsupported Length (mm)";
-        widthLabel.style.display = "none"; // Hide width field for 1-sided support
-        widthInput.style.display = "none";
-        widthInput.removeAttribute('required'); // Remove the required attribute
-    } else if (supportedSides === "2") {
+
+     if (supportedSides === "2" || supportedSides === "1") {
         lengthLabel.textContent = "Unsupported Length (mm)";
         widthLabel.textContent = "Supported Length (mm)";
         widthLabel.style.display = "block"; // Show width field for 2-sided support
@@ -56,6 +52,15 @@ function updateGlazingType() {
                 </div>
                 <div id="layerDetails${i}"></div>
             `;
+                // Add the Air Gap input after the first layer
+            if (i === 0) {
+                layerInputsHTML += `
+                    <div class="form-group">
+                        <label for="airGap">Air Gap (mm):</label>
+                        <input type="number" id="airGap" name="airGap">
+                    </div>
+                `;
+            }
         }
     }
 
@@ -108,7 +113,7 @@ function updateLayerDetails(layerIndex) {
         layerDetailsContainer.innerHTML = `
             <div class="form-group">
                 <label for="numPlys${layerIndex}">Number of Plies for Layer ${layerIndex + 1}:</label>
-                <input type="number" id="numPlys${layerIndex}" name="numPlys${layerIndex}" required min="1" onchange="updatePlys(${layerIndex})" required>
+                <input type="number" id="numPlys${layerIndex}" name="numPlys${layerIndex}" value ="2" onchange="updatePlys(${layerIndex})" readonly required>
             </div>
             <div id="plyDetails${layerIndex}"></div>
             <div class="form-group">
@@ -121,12 +126,13 @@ function updateLayerDetails(layerIndex) {
                 </select>
             </div>
         `;
+        updatePlys(layerIndex);
     }
     addInputEventListeners(); // Reapply listeners for dynamically generated fields
 }
 
 function updatePlys(layerIndex) {
-    const numPlys = parseInt(document.getElementById(`numPlys${layerIndex}`).value);
+    numPlys = 2;
     const plyDetailsContainer = document.getElementById(`plyDetails${layerIndex}`);
 
     plyDetailsContainer.innerHTML = '';

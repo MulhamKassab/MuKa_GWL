@@ -50,6 +50,7 @@ def calculate():
     number_of_plies = input_data.get('numberOfPlies', 0)
     pvb_thicknesses = input_data.get('pvbThicknesses', [])  # Retrieve the PVB thicknesses sent from JS
     interlayerTypes = input_data.get('interlayerTypes', [])
+    airGap = input_data.get('airGap', 0)
     first_page_image_path = "download/first_page.jpg"
 
     nfl_result = []
@@ -156,15 +157,18 @@ def calculate():
     glass_weight = calculate_glass_weight(
         glass_length, glass_width, layers_thicknesses, layers_types, pvb_thicknesses=pvb_thicknesses
     )
-
+    print("short_cof_to_send", short_cof_to_send)
+    print("long_cof_to_send", long_cof_to_send)
     if short_cof_to_send[0] > float(allowable_Deflection) or long_cof_to_send[0] > float(allowable_Deflection):
-        recommended_thickness = find_correct_thickness(shortDurationLoad, longDurationLoad,allowable_Deflection,number_of_supported_sides,
-                               length, width, modulus_of_elasticity,interlayerTypes, layer_type)
+        recommended_thickness = find_correct_thickness(shortDurationLoad, longDurationLoad, allowable_Deflection,
+                                                       number_of_supported_sides, glass_length, glass_width,
+                                                       modulus_of_elasticity, interlayerTypes,
+                                                       layer_type)
 
     create_pdf(pdf_bytes, glass_length, glass_width, pvb_thicknesses, number_of_supported_sides, layers_thicknesses,
                plyThicknessList, glass_weight, shortDurationLoad, longDurationLoad, allowable_Deflection, lr,
-               short_cof_to_send, long_cof_to_send, layers_types, recommended_thickness,
-               glass_layers_strength_type, logo_path, first_page_image_path)
+               glazing_type, short_cof_to_send, long_cof_to_send, layers_types, interlayerTypes, recommended_thickness,
+               airGap, glass_layers_strength_type, logo_path, first_page_image_path)
     pdf_bytes.seek(0)
 
     # Save PDF to a temporary location

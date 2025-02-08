@@ -25,7 +25,8 @@ def find_correct_thickness(shortDurationLoad, longDurationLoad, allowable_Deflec
             cof_short_duration = find_load_for_given_length(thickness, length, layer_type,
                                                             number_of_supported_sides,
                                                             "COF", shortDurationLoad, interlayerTypes)
-
+        if isinstance(cof_short_duration, str) and "Invalid" in cof_short_duration:
+            return None  # Return None if the COF calculation fails
         if cof_short_duration <= allowable_Deflection:
             thickness_to_send['Short'].append(thickness)
             break  # Stop once a suitable thickness is found
@@ -40,10 +41,13 @@ def find_correct_thickness(shortDurationLoad, longDurationLoad, allowable_Deflec
                 cof_long_duration = find_load_for_given_length(thickness, length, layer_type, number_of_supported_sides,
                                                                "COF", longDurationLoad, interlayerTypes)
 
+            if isinstance(cof_long_duration, str) and "Invalid" in cof_long_duration:
+                return None  # Return None if the COF calculation fails
             if cof_long_duration <= allowable_Deflection:
                 thickness_to_send['Long'].append(thickness)
                 break  # Stop once a suitable thickness is found
     return thickness_to_send
+
 
 
 # Example call to the function

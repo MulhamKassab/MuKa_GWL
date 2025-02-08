@@ -3,7 +3,7 @@ import json
 import os
 
 
-def load_json_file(layer_type, supported_sides, nfl_or_cof, interlayerTypes, base_dir="./Json"):
+def load_json_file(layer_type, supported_sides, nfl_or_cof, interlayerType, base_dir="./Json"):
     """
     Load a JSON file based on the given parameters.
 
@@ -17,8 +17,8 @@ def load_json_file(layer_type, supported_sides, nfl_or_cof, interlayerTypes, bas
         dict or str: The data dictionary inside the top-level key, or an error message.
     """
 
-    if not interlayerTypes:
-        interlayerTypes.append("PVB")
+    if not interlayerType:
+        interlayerType.append("PVB")
     # Build the file path based on the parameters
     if nfl_or_cof == "NFL":
         file_path = os.path.join(
@@ -32,7 +32,7 @@ def load_json_file(layer_type, supported_sides, nfl_or_cof, interlayerTypes, bas
             base_dir,
             nfl_or_cof,
             layer_type,
-            f"{nfl_or_cof}_{supported_sides}_{layer_type}_{interlayerTypes[0]}.json"  # Example: 'NFL_1_mono_PVB.json'
+            f"{nfl_or_cof}_{supported_sides}_{layer_type}_{interlayerType[0]}.json"  # Example: 'COF_1_mono_PVB.json'
         )
 
 
@@ -46,7 +46,7 @@ def load_json_file(layer_type, supported_sides, nfl_or_cof, interlayerTypes, bas
         if nfl_or_cof == "NFL":
             top_level_key = f"{nfl_or_cof}_{supported_sides}_{layer_type}"
         else:
-            top_level_key = f"{nfl_or_cof}_{supported_sides}_{layer_type}_{interlayerTypes[0]}"
+            top_level_key = f"{nfl_or_cof}_{supported_sides}_{layer_type}_{interlayerType[0]}"
 
         return data.get(top_level_key, f"Top-level key '{top_level_key}' not found in the JSON file.")
 
@@ -72,13 +72,16 @@ def find_load_for_given_length(thickness, length, layer_type, supported_sides, n
         float or str: Calculated load or deflection, or an error message.
     """
     # Load the correct JSON data
-    points_dict = load_json_file(layer_type, supported_sides, nfl_or_cof, interlayerTypes)
+    print(interlayerTypes)
+    if interlayerTypes and interlayerTypes[0] == "SGP":
+        points_dict = load_json_file(layer_type, supported_sides, nfl_or_cof, ["PVB"])
+    else:
+        points_dict = load_json_file(layer_type, supported_sides, nfl_or_cof, interlayerTypes)
 
     # Check if the data is loaded correctly
     if isinstance(points_dict, str):
         return points_dict  # Return the error message
-
-    if thickness > 19:
+    if nfl_or_cof == "NFL" and thickness > 19:
         thickness = 19
     # Check if the thickness exists in the points_dict
     points = points_dict.get(str(thickness))
@@ -110,6 +113,8 @@ def find_load_for_given_length(thickness, length, layer_type, supported_sides, n
 
             log_y = log_y1 + ((log_load_l4 - log_x1) / (log_x2 - log_x1)) * (log_y2 - log_y1)
             y = 10 ** log_y  # Convert back from logarithmic scale
+            if interlayerTypes[0] == "SGP":
+                y *= 0.3
             return round(y, 5)
 
     except ValueError as e:

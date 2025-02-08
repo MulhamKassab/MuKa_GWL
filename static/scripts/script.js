@@ -85,6 +85,7 @@ function gatherDataFromInput() {
     const numberOfSupportedSides = parseInt(document.getElementById('numberOfSupportedSides').value) || 0;
     const glazingType = document.getElementById('glazingType').value;
     const numberOfLayers = glazingType === 'single' ? 1 : 2;
+    const airGap = parseFloat(document.getElementById('airGap').value) || 0;
 
     inputParams.layersTypes = [];
     inputParams.layersThicknesses = [];
@@ -108,7 +109,8 @@ function gatherDataFromInput() {
         glassLayersStrengthType: [],
         numberOfPlies: [],
         pvbThicknesses: [],
-        interlayerTypes: []
+        interlayerTypes: [],
+        airGap
     });
 
     // Loop through each layer

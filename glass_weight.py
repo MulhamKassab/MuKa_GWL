@@ -11,7 +11,8 @@ GLASS_WEIGHT_MAP = {
     10.0: 24.4,
     12.0: 31.2,
     16.0: 39.5,
-    19.0: 47.8
+    19.0: 47.8,
+    20.0: 50.19
 }
 
 # Define the interlayer thickness and corresponding weight (in kg/m²) based on the second table
@@ -20,6 +21,7 @@ INTERLAYER_WEIGHT_MAP = {
     0.76: 0.84,
     1.14: 1.20,
     1.52: 1.60,
+    1.524: 1.6,
     2.29: 2.50
 }
 
