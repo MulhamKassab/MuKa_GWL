@@ -85,7 +85,17 @@ function gatherDataFromInput() {
     const numberOfSupportedSides = parseInt(document.getElementById('numberOfSupportedSides').value) || 0;
     const glazingType = document.getElementById('glazingType').value;
     const numberOfLayers = glazingType === 'single' ? 1 : 2;
-    const airGap = parseFloat(document.getElementById('airGap').value) || 0;
+    // Check if the airGap input exists and is not empty, then parse it, otherwise set to 0
+    let airGapInput = document.getElementById('airGap');
+    let airGap = 0; // Default to 0
+    if (airGapInput && airGapInput.value.trim() !== '') {
+        airGap = parseFloat(airGapInput.value);
+        if (isNaN(airGap)) { // Check if the parsed value is not a number
+            airGap = 0; // Reset to 0 if the input value is not a valid number
+            console.error('Invalid Air Gap value, defaulted to 0');
+        }
+    }
+
 
     inputParams.layersTypes = [];
     inputParams.layersThicknesses = [];
