@@ -55,12 +55,12 @@ def add_logo_and_text(canvas, doc, logo_path):
 
 
     # Footer text content
-    footer_text = """Dubai Investment Park 2
-P.O. Box 54563,
-Dubai, UAE
-+971 4 88 5333 6
-info@gutmannpvb.com
-www.gutmannpvb.com"""
+    footer_text = """ADDRESS
+P.O. Box 00000,
+ADDRESS
++123 123456789
+EMAIL
+WEBSITE"""
 
     # Split footer text into lines and draw each line at the bottom of the page
     footer_lines = footer_text.split('\n')
@@ -192,7 +192,7 @@ def create_pdf(fileobj, glass_length, glass_width, pvb_thicknesses, number_of_su
         glass_length, glass_width = glass_width, glass_length
     doc = SimpleDocTemplate(fileobj, pagesize=A4, topMargin=30)
     elements = [
-        draw_paragraph("GUTMANN PVB", styles['MainTitle']),
+        draw_paragraph("COMPANY'S NAME", styles['MainTitle']),
         draw_paragraph("Load Resistance Report", styles['SecondTitle']),
         draw_paragraph("Based on ASTM E1300", styles['MyNormal']),
         Spacer(1, 20),
