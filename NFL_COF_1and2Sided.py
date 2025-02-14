@@ -72,7 +72,6 @@ def find_load_for_given_length(thickness, length, layer_type, supported_sides, n
         float or str: Calculated load or deflection, or an error message.
     """
     # Load the correct JSON data
-    print(interlayerTypes)
     if interlayerTypes and interlayerTypes[0] == "SGP":
         points_dict = load_json_file(layer_type, supported_sides, nfl_or_cof, ["PVB"])
     else:

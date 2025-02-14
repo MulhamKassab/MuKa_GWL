@@ -1,3 +1,5 @@
+let thicknessOptions = []
+
 function updateSupportedSides() {
     const supportedSides = document.getElementById('numberOfSupportedSides').value;
 
@@ -20,6 +22,54 @@ function updateSupportedSides() {
         widthInput.style.display = "block";
         widthInput.setAttribute('required', 'required'); // Add the required attribute
     }
+
+    // Define the options for the thickness dropdown with formatted values
+    const thicknessOptions_4_sided = [
+        {value: 2.5, display: '2.5 (2.16)'},
+        {value: 2.7, display: '2.7 (2.59)'},
+        {value: 3.0, display: '3.0 (2.92)'},
+        {value: 4.0, display: '4.0 (3.78)'},
+        {value: 5.0, display: '5.0 (4.57)'},
+        {value: 6.0, display: '6.0 (5.56)'},
+        {value: 8.0, display: '8.0 (7.42)'},
+        {value: 10.0, display: '10.0 (9.02)'},
+        {value: 12.0, display: '12.0 (11.91)'},
+        {value: 16.0, display: '16.0 (15.09)'},
+        {value: 19.0, display: '19.0 (18.26)'},
+        {value: 22.0, display: '22.0 (21.44)'}
+    ];
+
+    // Define the options for the thickness dropdown with formatted values
+    const thicknessOptions_1_2_sided = [
+        {value: "", display: 'Select layer thickness'},
+        {value: 6.0, display: '6.0 (5.56)'},
+        {value: 8.0, display: '8.0 (7.42)'},
+        {value: 10.0, display: '10.0 (9.02)'},
+        {value: 12.0, display: '12.0 (11.91)'},
+        {value: 16.0, display: '16.0 (15.09)'},
+        {value: 19.0, display: '19.0 (18.26)'},
+        {value: 22.0, display: '22.0 (21.44)'}
+    ];
+
+    if (supportedSides == 4){
+        thicknessOptions = thicknessOptions_4_sided
+    }
+
+    else{
+        thicknessOptions = thicknessOptions_1_2_sided
+    }
+    const dropdownsToUpdate = document.querySelectorAll('.thickness-select');
+    dropdownsToUpdate.forEach(dropdown => {
+        // Clear existing options
+        dropdown.innerHTML = '';
+        // Append new options
+        thicknessOptions.forEach(option => {
+            const optionElement = document.createElement('option');
+            optionElement.value = option.value;
+            optionElement.textContent = option.display;
+            dropdown.appendChild(optionElement);
+        });
+    });
 }
 
 function updateGlazingType() {
@@ -57,7 +107,7 @@ function updateGlazingType() {
                 layerInputsHTML += `
                     <div class="form-group">
                         <label for="airGap">Air Gap (mm):</label>
-                        <input type="number" id="airGap" name="airGap">
+                        <input type="number" id="airGap" name="airGap" required>
                     </div>
                 `;
             }
@@ -71,25 +121,12 @@ function updateGlazingType() {
 function updateLayerDetails(layerIndex) {
     const layerType = document.getElementById(`layerType${layerIndex}`).value;
     const layerDetailsContainer = document.getElementById(`layerDetails${layerIndex}`);
+    const supportedSides = document.getElementById('numberOfSupportedSides').value;
+
 
     layerDetailsContainer.innerHTML = '';
 
-    // Define the options for the thickness dropdown with formatted values
-    const thicknessOptions = [
-        {value: null, display: 'Select layer thickness'},
-        {value: 2.5, display: '2.5 (2.16)'},
-        {value: 2.7, display: '2.7 (2.59)'},
-        {value: 3.0, display: '3.0 (2.92)'},
-        {value: 4.0, display: '4.0 (3.78)'},
-        {value: 5.0, display: '5.0 (4.57)'},
-        {value: 6.0, display: '6.0 (5.56)'},
-        {value: 8.0, display: '8.0 (7.42)'},
-        {value: 10.0, display: '10.0 (9.02)'},
-        {value: 12.0, display: '12.0 (11.91)'},
-        {value: 16.0, display: '16.0 (15.09)'},
-        {value: 19.0, display: '19.0 (18.26)'},
-        {value: 22.0, display: '22.0 (21.44)'}
-    ];
+
 
     if (layerType === 'mono') {
         layerDetailsContainer.innerHTML = `
@@ -139,7 +176,7 @@ function updatePlys(layerIndex) {
 
     // Define the options for the ply thickness dropdown with formatted values
     const thicknessOptions = [
-        {value: null, display: 'Select ply thickness'},
+        {value: "", display: 'Select ply thickness'},
         {value: 2.5, display: '2.5 (2.16)'},
         {value: 2.7, display: '2.7 (2.59)'},
         {value: 3.0, display: '3.0 (2.92)'},
@@ -156,7 +193,7 @@ function updatePlys(layerIndex) {
 
     // Define the options for the PVB thickness dropdown with formatted values
     const interlayerThicknessOptions = [
-        {value: null, display: 'Select interlayer thickness'},
+        {value: "", display: 'Select interlayer thickness'},
         {value: 0.381, display: '0.381 mm'},
         {value: 0.762, display: '0.762 mm'},
         {value: 1.143, display: '1.143 mm'},
@@ -169,6 +206,7 @@ function updatePlys(layerIndex) {
 
     // Define the options for the PVB/SGP interlayer dropdown
     const interlayerOptions = [
+        {value: '', display: 'Select Interlayer type'},
         {value: 'PVB', display: 'PVB'},
         {value: 'SGP', display: 'SGP'}
     ];

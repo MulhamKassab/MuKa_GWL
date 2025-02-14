@@ -69,7 +69,12 @@ def calculate():
     # Perform NFL calculation for each layer's thickness
     if number_of_supported_sides == 4:
         for thickness in layers_thicknesses:
-            result = calculate_nfl(glass_length, glass_width, number_of_supported_sides, thickness, layers_types)
+            try:
+                result = calculate_nfl(glass_length, glass_width, number_of_supported_sides, thickness, layers_types)
+
+            except:
+                return jsonify("Adjust your input data"), 400
+
             if isinstance(result, tuple):
                 NFL_interpolated, jsonX, jsonY, jsonNFL, length, width, xi, yi, zi, AR, key = result
                 nfl_result.append(round(float(NFL_interpolated), 2))  # Convert to float
@@ -113,57 +118,83 @@ def calculate():
                 plot_interpolated_nfl.append(interpolated_nfl)
 
         except Exception as e:
-            return jsonify({"error": str(e)}), 500
+            return jsonify("Adjust your input data"), 400
 
     else:
-        for thickness, layer_type in zip(layers_thicknesses, layers_types):
-            nfl_result.append(find_load_for_given_length(thickness, glass_length, layer_type,
-                                                         number_of_supported_sides, "NFL", 0,
-                                                         interlayerTypes))
+        try:
+            for thickness, layer_type in zip(layers_thicknesses, layers_types):
+                nfl_result.append(find_load_for_given_length(thickness, glass_length, layer_type,
+                                                             number_of_supported_sides, "NFL", 0,
+                                                             interlayerTypes))
 
-            cof_short_duration = find_load_for_given_length(thickness, glass_length, layer_type,
-                                                            number_of_supported_sides, "COF", shortDurationLoad,
-                                                            interlayerTypes)
-            short_cof_to_send.append(cof_short_duration)
+                cof_short_duration = find_load_for_given_length(thickness, glass_length, layer_type,
+                                                                number_of_supported_sides, "COF", shortDurationLoad,
+                                                                interlayerTypes)
+                short_cof_to_send.append(cof_short_duration)
 
-            if longDurationLoad != 0:
-                cof_long_duration = find_load_for_given_length(thickness, glass_length, layer_type,
-                                                               number_of_supported_sides, "COF", longDurationLoad,
-                                                               interlayerTypes)
-                long_cof_to_send.append(cof_long_duration)
+                if longDurationLoad != 0:
+                    cof_long_duration = find_load_for_given_length(thickness, glass_length, layer_type,
+                                                                   number_of_supported_sides, "COF", longDurationLoad,
+                                                                   interlayerTypes)
+                    long_cof_to_send.append(cof_long_duration)
+        except:
+            return jsonify("Adjust your input data"), 400
 
     # Load share factor (LSF) and LR calculations
     if glazing_type == "double":
-        lsf_value = get_load_share_factor(layers_thicknesses, layers_types)
-        if number_of_supported_sides == 4:
-            lr_value = calculate_lr(plot_interpolated_nfl, gtf, lsf_value, glazing_type)
-        else:
-            lr_value = calculate_lr(nfl_result, gtf, lsf_value, glazing_type)
-        lr.append(lr_value)
+        try:
+            lsf_value = get_load_share_factor(layers_thicknesses, layers_types)
+        except:
+            return jsonify("Adjust your input data"), 400
+
+        try:
+            if number_of_supported_sides == 4:
+                lr_value = calculate_lr(plot_interpolated_nfl, gtf, lsf_value, glazing_type)
+            else:
+                lr_value = calculate_lr(nfl_result, gtf, lsf_value, glazing_type)
+            lr.append(lr_value)
+        except:
+            return jsonify("Adjust your input data"), 400
+
     else:
         lsf_value = None  # or a more meaningful default value, if None isn't appropriate
         if number_of_supported_sides == 4:
-            for nfl_interpolated_value in plot_interpolated_nfl:
-                lr_value = calculate_lr(nfl_interpolated_value, gtf, lsf_value, "single")
+            try:
+                for nfl_interpolated_value in plot_interpolated_nfl:
+                    lr_value = calculate_lr(nfl_interpolated_value, gtf, lsf_value, "single")
+            except:
+                return jsonify("Adjust your input data"), 400
+
         else:
-            for nfl_value in nfl_result:
-                lr_value = calculate_lr(nfl_value, gtf, lsf_value, "single")
+            try:
+                for nfl_value in nfl_result:
+                    lr_value = calculate_lr(nfl_value, gtf, lsf_value, "single")
+            except:
+                return jsonify("Adjust your input data"), 400
         lr.append(lr_value)
 
     # Generate PDF in memory
     pdf_bytes = io.BytesIO()
 
     # Calculate glass weight including PVB layers
-    glass_weight = calculate_glass_weight(
-        glass_length, glass_width, layers_thicknesses, layers_types, pvb_thicknesses=pvb_thicknesses
-    )
+    try:
+        glass_weight = calculate_glass_weight(
+            glass_length, glass_width, layers_thicknesses, layers_types, pvb_thicknesses=pvb_thicknesses
+        )
+    except:
+        return jsonify("Adjust your input data"), 400
+
     print("short_cof_to_send", short_cof_to_send)
     print("long_cof_to_send", long_cof_to_send)
-    if short_cof_to_send[0] > float(allowable_Deflection) or long_cof_to_send[0] > float(allowable_Deflection):
+
+    if short_cof_to_send[0] > float(allowable_Deflection) or (len(long_cof_to_send) > 0 and long_cof_to_send[0] >
+                                                              float(allowable_Deflection)):
+
         recommended_thickness = find_correct_thickness(shortDurationLoad, longDurationLoad, allowable_Deflection,
                                                        number_of_supported_sides, glass_length, glass_width,
                                                        modulus_of_elasticity, interlayerTypes,
                                                        layer_type)
+        print("recommended_thickness", recommended_thickness)
 
     create_pdf(pdf_bytes, glass_length, glass_width, pvb_thicknesses, number_of_supported_sides, layers_thicknesses,
                plyThicknessList, glass_weight, shortDurationLoad, longDurationLoad, allowable_Deflection, lr,
